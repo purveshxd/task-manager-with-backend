@@ -1,0 +1,51 @@
+# ----------------------------
+# Flutter / Dart
+# ----------------------------
+
+# Ignore all build folders anywhere
+**/build/
+
+# Dart/Flutter tools
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
+
+# Flutter iOS artifacts
+**/ios/Flutter/.last_build_id
+
+# Symbolication & Obfuscation
+app.*.symbols
+app.*.map.json
+
+# IntelliJ / Android Studio files
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code settings (optional)
+#.vscode/
+
+# ----------------------------
+# Node.js / Express
+# ----------------------------
+**/node_modules/
+**/npm-debug.log
+**/yarn-error.log
+**/package-lock.json
+
+# Environment variables
+**/.env
+
+# Logs
+logs
+*.log
+
+# ----------------------------
+# OS / System files
+# ----------------------------
+.DS_Store
+Thumbs.db
