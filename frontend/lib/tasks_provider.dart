@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:tasks_frontend/tasks.model.dart';
 
 class TasksProvider {
+  // final String url = "http://127.0.0.1:8000";
   final String url = "http://192.168.1.4:8000";
 
   // ! Get Tasks
@@ -39,7 +40,6 @@ class TasksProvider {
       } else {
         log("No Data");
         return false;
-        
       }
     } catch (e) {
       log(e.toString());
@@ -65,7 +65,9 @@ class TasksProvider {
   // ! Delete Task
   Future<bool> deleteTask(String taskID) async {
     try {
-      final resp = await http.put(Uri.parse("$url/delete-task/$taskID"));
+      final resp = await http.delete(Uri.parse("$url/delete-task/$taskID"));
+      log(taskID);
+      log(resp.body.toString());
       if (resp.statusCode == 200) {
         return true;
       } else {

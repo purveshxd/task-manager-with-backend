@@ -34,7 +34,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         currentTasks.add(event.task);
         emit(TasksLoaded(tasks: currentTasks));
       } else {
-        emit(TaskActionFailed(message: "Can't add the task right now"));
+        emit(TaskActionMessage(message: "Can't add the task right now"));
         emit(TasksLoaded(tasks: currentTasks));
       }
     }
@@ -42,26 +42,38 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
   Future<void> _onToggleTask(ToggleTask event, Emitter<TasksState> emit) async {
     if (state is TasksLoaded) {
-      await tasksProvider.toggleTask(event.id);
+      final currentTasks = List<Tasks>.from((state as TasksLoaded).tasks);
+      final isToggled = await tasksProvider.toggleTask(event.id);
+      if (isToggled) {
+        final updatedTasks = (state as TasksLoaded).tasks.map((task) {
+          if (task.id == event.id) {
+            return task.copyWith(isComplete: !task.isComplete);
+          }
+          return task;
+        }).toList();
 
-      final updatedTasks = (state as TasksLoaded).tasks.map((task) {
-        if (task.id == event.id) {
-          return task.copyWith(isComplete: !task.isComplete);
-        }
-        return task;
-      }).toList();
-
-      emit(TasksLoaded(tasks: updatedTasks));
+        emit(TasksLoaded(tasks: updatedTasks));
+      } else {
+        emit(TaskActionMessage(message: "Error: Can't delete the task"));
+        emit(TasksLoaded(tasks: currentTasks));
+      }
     }
   }
 
   Future<void> _onDeleteTask(DeleteTask event, Emitter<TasksState> emit) async {
     if (state is TasksLoaded) {
-      await tasksProvider.deleteTask(event.id);
-      final updatedTasks = (state as TasksLoaded).tasks
-          .where((task) => task.id != event.id)
-          .toList();
-      emit(TasksLoaded(tasks: updatedTasks));
+      final currentTasks = List<Tasks>.from((state as TasksLoaded).tasks);
+      final isDeleted = await tasksProvider.deleteTask(event.id);
+      if (isDeleted) {
+        final updatedTasks = (state as TasksLoaded).tasks
+            .where((task) => task.id != event.id)
+            .toList();
+        emit(TasksLoading());
+        emit(TasksLoaded(tasks: updatedTasks));
+      } else {
+        emit(TaskActionMessage(message: "Error: Can't delete the task"));
+        emit(TasksLoaded(tasks: currentTasks));
+      }
     }
   }
 }

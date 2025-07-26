@@ -18,7 +18,13 @@ final class TasksError extends TasksState {
   TasksError(this.message);
 }
 
-final class TaskActionFailed extends TasksState {
+// final class TaskActionFailed extends TasksState {
+//   final String message;
+//   TaskActionFailed({required this.message});
+// }
+
+final class TaskActionMessage extends TasksState {
   final String message;
-  TaskActionFailed({required this.message});
+
+  TaskActionMessage({required this.message});
 }

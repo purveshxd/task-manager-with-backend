@@ -1,62 +1,8 @@
 [
   {
-    "name": "Clean your bathroom",
+    "name": "Go gym 💪",
+    "id": "5818727905825516",
     "isComplete": true,
-    "desc": "Clean your bathroom and seat",
-    "id": "4473374710984706"
-  },
-  {
-    "name": "Clean",
-    "isComplete": true,
-    "desc": "Clean your bathroom and seat",
-    "id": "6473374710984706"
-  },
-  {
-    "name": "Gym",
-    "isComplete": true,
-    "desc": "Go to the Gym for exercise",
-    "id": "769588075579045"
-  },
-  {
-    "name": "Walk",
-    "id": "6120062221650874",
-    "isComplete": true,
-    "desc": "Go for a walk tommorrow morning"
-  },
-  {
-    "name": "Walk",
-    "id": "6120062221650875",
-    "isComplete": true,
-    "desc": "Go for a walk tommorrow morning"
-  },
-  {
-    "name": "Walk",
-    "id": "6120062221650876",
-    "isComplete": true,
-    "desc": "Go for a walk tommorrow morning"
-  },
-  {
-    "name": "Walk",
-    "id": "6120062221650877",
-    "isComplete": true,
-    "desc": "Go for a walk tommorrow morning"
-  },
-  {
-    "name": "Correct the scroll",
-    "id": "9020891142019911",
-    "isComplete": true,
-    "desc": " Check the scrolling of the app and correct it accordingly as it my interfere with the bottom sheet"
-  },
-  {
-    "name": "another task",
-    "id": "8406027871891636",
-    "isComplete": false,
-    "desc": ""
-  },
-  {
-    "name": "one more task",
-    "id": "9918339802539121",
-    "isComplete": false,
-    "desc": "this is an important task"
+    "desc": "go to the gym today"
   }
 ]
