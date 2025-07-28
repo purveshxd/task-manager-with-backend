@@ -14,6 +14,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<AddTask>(_onAddTask);
     on<ToggleTask>(_onToggleTask);
     on<DeleteTask>(_onDeleteTask);
+    on<GroupTasks>(_groupTasks);
   }
 
   Future<void> _onLoadTasks(LoadTasks event, Emitter<TasksState> emit) async {
@@ -74,6 +75,25 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         emit(TaskActionMessage(message: "Error: Can't delete the task"));
         emit(TasksLoaded(tasks: currentTasks));
       }
+    }
+  }
+
+  Future<void> _groupTasks(GroupTasks event, Emitter<TasksState> emit) async {
+    if (state is TasksLoaded) {
+      // final currentTasks = List<Tasks>.from((state as TasksLoaded).tasks);
+      final completedTasks = event.tasks
+          .where((task) => task.isComplete == true)
+          .toList();
+      final onGoingTasks = event.tasks
+          .where((task) => task.isComplete == false)
+          .toList();
+
+      emit(
+        GroupedTasksState(
+          completedTasks: completedTasks,
+          ongoingTasks: onGoingTasks,
+        ),
+      );
     }
   }
 }

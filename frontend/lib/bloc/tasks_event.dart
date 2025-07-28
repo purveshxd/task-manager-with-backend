@@ -24,4 +24,8 @@ class DeleteTask extends TasksEvent {
   DeleteTask(this.id);
 }
 
+class GroupTasks extends TasksEvent {
+  final List<Tasks> tasks;
 
+  GroupTasks({required this.tasks});
+}

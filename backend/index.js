@@ -1,6 +1,7 @@
 import json from 'body-parser';
 import { readTasks, writeTasks } from './fileReadWrite.js';
 import express from 'express';
+import cors from 'cors';
 import fs from 'fs';
 
 
@@ -8,7 +9,7 @@ const app = express()
 
 
 
-
+app.use(cors())
 app.use(express.json())
 
 app.get('/get-task', (req, res) => {
@@ -57,4 +58,4 @@ app.delete('/delete-task/:id', (req, res) => {
 })
 
 
-app.listen(8000, () => console.log("Server up!!! | Listening on http://localhost:8000"))
+app.listen(8000, '0.0.0.0', () => console.log("Server up!!! | Listening on http://0.0.0.0:8000"))

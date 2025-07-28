@@ -28,3 +28,10 @@ final class TaskActionMessage extends TasksState {
 
   TaskActionMessage({required this.message});
 }
+
+final class GroupedTasksState extends TasksState {
+  final List<Tasks> completedTasks;
+  final List<Tasks> ongoingTasks;
+
+  GroupedTasksState({required this.completedTasks, required this.ongoingTasks});
+}

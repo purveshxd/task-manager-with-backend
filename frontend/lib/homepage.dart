@@ -106,7 +106,7 @@ class Homepage extends StatelessWidget {
 
                         enableFeedback: true,
                         subtitle: task.desc.isNotEmpty
-                            ? Container(
+                            ? Container( 
                                 margin: EdgeInsets.all(0),
                                 padding: EdgeInsets.all(8),
                                 decoration: BoxDecoration(
