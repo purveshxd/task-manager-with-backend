@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
-import 'package:tasks_frontend/tasks.model.dart';
+import 'package:tasks_frontend/views/tasks.model.dart';
 
 class TasksProvider {
   // final String url = "http://127.0.0.1:8000";

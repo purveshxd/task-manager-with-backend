@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasks_frontend/bloc/tasks_bloc.dart';
-import 'package:tasks_frontend/tasks.model.dart';
+import 'package:tasks_frontend/views/tasks.model.dart';
 
 class Homepage extends StatelessWidget {
   const Homepage({super.key});

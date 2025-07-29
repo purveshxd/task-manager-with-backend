@@ -8,13 +8,13 @@
   {
     "name": "new tas",
     "id": "45300479761414305",
-    "isComplete": true,
-    "desc": ""
+    "isComplete": false,
+    "desc": "go to the gym today go to the gym today go to the gym today go to the gym today go to the gym today go to the gym today "
   },
   {
     "name": "another task",
     "id": "2269466431885619",
-    "isComplete": true,
+    "isComplete": false,
     "desc": ""
   },
   {
@@ -26,7 +26,7 @@
   {
     "name": "Gym Monday",
     "id": "11671618406342471",
-    "isComplete": false,
+    "isComplete": true,
     "desc": "Go to gym on Monday"
   },
   {
@@ -38,7 +38,7 @@
   {
     "name": "once again",
     "id": "7283897045718703",
-    "isComplete": false,
+    "isComplete": true,
     "desc": ""
   },
   {
@@ -74,7 +74,19 @@
   {
     "name": "New Task",
     "id": "18747559821023977",
-    "isComplete": false,
+    "isComplete": true,
     "desc": "Do the new task fast"
+  },
+  {
+    "name": "gym tomorrow",
+    "id": "20834310466430246",
+    "isComplete": false,
+    "desc": " another day for for gym"
+  },
+  {
+    "name": "one more task",
+    "id": "16699832863583513",
+    "isComplete": false,
+    "desc": "Another gym task"
   }
 ]

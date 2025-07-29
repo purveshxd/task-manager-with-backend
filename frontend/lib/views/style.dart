@@ -4,7 +4,8 @@ class AppStyle {
   static Text subheadingTextStyle(String text) {
     return Text(
       text,
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, height: 0),
     );
   }
 }

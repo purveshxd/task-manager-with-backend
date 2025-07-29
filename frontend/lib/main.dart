@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasks_frontend/bloc/tasks_bloc.dart';
-import 'package:tasks_frontend/home.dart';
-import 'package:tasks_frontend/tasks_provider.dart';
+import 'package:tasks_frontend/views/home.dart';
+import 'package:tasks_frontend/views/tasks_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,7 +17,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, primarySwatch: Colors.indigo),
+      theme: ThemeData(
+        fontFamily: 'Poppins',
+        useMaterial3: true,
+        primarySwatch: Colors.indigo,
+      ),
       home: BlocProvider(
         create: (context) => TasksBloc(tasksProvider)..add(LoadTasks()),
         child: Home(),

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:tasks_frontend/tasks.model.dart';
-import 'package:tasks_frontend/tasks_provider.dart';
+import 'package:tasks_frontend/views/tasks.model.dart';
+import 'package:tasks_frontend/views/tasks_provider.dart';
 
 part 'tasks_event.dart';
 part 'tasks_state.dart';
