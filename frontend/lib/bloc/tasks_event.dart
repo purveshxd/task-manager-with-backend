@@ -12,6 +12,12 @@ class AddTask extends TasksEvent {
   AddTask(this.task);
 }
 
+// Event: Update a task
+class UpdateTask extends TasksEvent {
+  final Tasks updatedTask;
+  UpdateTask(this.updatedTask);
+}
+
 // Event: Toggle completion of a task
 class ToggleTask extends TasksEvent {
   final String id;

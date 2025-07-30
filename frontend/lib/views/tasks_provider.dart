@@ -78,4 +78,26 @@ class TasksProvider {
       throw Exception(e);
     }
   }
+
+  // ! Update Task
+  Future<bool> updateTask(Tasks task) async {
+    try {
+      log("UpdatedTaskfromProvider${task.toJson()}");
+
+      final resp = await http.put(
+        Uri.parse("$url/edit-task/${task.id}"),
+        headers: {"Content-type": "application/json"},
+        body: task.toJson(),
+      );
+      log("body${resp.body}");
+      if (resp.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Exception(e);
+    }
+  }
 }

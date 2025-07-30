@@ -22,6 +22,8 @@ app.get('/get-task', (req, res) => {
 app.post('/add-task', (req, res) => {
     const tasks = readTasks()
     const task = req.body;
+    console.log(req.body);
+
     // console.log(req.body.id);
     task.isComplete = false
 
@@ -52,6 +54,29 @@ app.delete('/delete-task/:id', (req, res) => {
         tasks.splice(index, 1)
         writeTasks(tasks)
         res.json({ message: "Task Deleted" })
+    } else {
+        res.status(404).json({ message: "Task not found" })
+    }
+})
+
+
+app.put('/edit-task/:id', (req, res) => {
+    const tasks = readTasks()
+    const task = req.body;
+    const taskId = req.params.id;
+    console.log(task);
+
+
+    const index = tasks.findIndex(t => t.id == taskId)
+
+    if (index !== -1) {
+        tasks[index] = {
+            ...tasks[index],
+            ...task
+        };
+
+        writeTasks(tasks)
+        res.json(tasks[index])
     } else {
         res.status(404).json({ message: "Task not found" })
     }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:tasks_frontend/views/tasks.model.dart';
@@ -15,6 +17,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<ToggleTask>(_onToggleTask);
     on<DeleteTask>(_onDeleteTask);
     on<GroupTasks>(_groupTasks);
+    on<UpdateTask>(_onUpdateTask);
   }
 
   Future<void> _onLoadTasks(LoadTasks event, Emitter<TasksState> emit) async {
@@ -94,6 +97,33 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
           ongoingTasks: onGoingTasks,
         ),
       );
+    }
+  }
+
+  Future<void> _onUpdateTask(UpdateTask event, Emitter<TasksState> emit) async {
+    if (state is TasksLoaded) {
+      final currentTasksList = List<Tasks>.from((state as TasksLoaded).tasks);
+
+      // Find index of the task to update
+      final index = currentTasksList.indexWhere(
+        (task) => task.id == event.updatedTask.id,
+      );
+
+      if (index != -1) {
+        // Replace old task with the updated one
+        currentTasksList[index] = event.updatedTask;
+        log("UpdatedTask-${event.updatedTask.toJson()}");
+        // Optionally call API to persist the update
+        final isUpdated = await tasksProvider.updateTask(event.updatedTask);
+
+        if (isUpdated == true) {
+          emit(TasksLoaded(tasks: currentTasksList));
+        } else {
+          // Show error message and revert state if needed
+          emit(TaskActionMessage(message: "Error: Can't update the task"));
+          emit(TasksLoaded(tasks: currentTasksList)); // Restore old state
+        }
+      }
     }
   }
 }

@@ -5,9 +5,18 @@ import 'package:tasks_frontend/views/home.dart';
 import 'package:tasks_frontend/views/tasks_provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    BlocProvider(
+      create: (context) => TasksBloc(TasksProvider())..add(LoadTasks()),
+      child: MyApp(),
+    ),
+  );
 }
 
+/*
+  TODO: Work on the edit task page [Remove it OR merge it with Add task page]
+  TODO: Work on the backend as well
+*/
 class MyApp extends StatelessWidget {
   final TasksProvider tasksProvider = TasksProvider();
 
@@ -22,10 +31,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         primarySwatch: Colors.indigo,
       ),
-      home: BlocProvider(
-        create: (context) => TasksBloc(tasksProvider)..add(LoadTasks()),
-        child: Home(),
-      ),
+      home: Home(),
     );
   }
 }

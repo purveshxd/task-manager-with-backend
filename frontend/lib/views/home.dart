@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:tasks_frontend/bloc/tasks_bloc.dart';
 import 'package:tasks_frontend/views/add_task.view.dart';
+import 'package:tasks_frontend/views/setting_view.dart';
 import 'package:tasks_frontend/views/style.dart';
 import 'package:tasks_frontend/views/tasks.model.dart';
 import 'package:tasks_frontend/widget/icon_button_filled.dart';
@@ -17,7 +18,6 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  final TextEditingController taskTitleController = TextEditingController();
   final focusNode = FocusNode();
 
   String dateFormat() {
@@ -37,27 +37,6 @@ class HomeState extends State<Home> {
     final per = ((done / total) * 100).floor();
 
     return [stringFormat, per];
-  }
-
-  void onSubmit() {
-    String taskTitle = "";
-    String desc = "";
-
-    if (!taskTitleController.text.contains("#")) {
-      taskTitle = taskTitleController.text.trim();
-    } else {
-      taskTitle = taskTitleController.text.trim().split("#")[0].trim();
-      desc = taskTitleController.text.trim().split("#")[1].isEmpty
-          ? ""
-          : taskTitleController.text.trim().split("#")[1].trim();
-    }
-    if (taskTitle.isNotEmpty) {
-      context.read<TasksBloc>().add(
-        AddTask(Tasks(name: taskTitle, id: '0', isComplete: false, desc: desc)),
-      );
-      taskTitleController.clear();
-      focusNode.unfocus();
-    }
   }
 
   final double headerHeight = 200;
@@ -88,24 +67,25 @@ class HomeState extends State<Home> {
                       .where((task) => task.isComplete == false)
                       .toList();
                   return Stack(
-                    alignment: Alignment.bottomCenter,
+                    fit: StackFit.expand,
+                    alignment: Alignment.topCenter,
                     children: [
                       // List below
                       Padding(
-                        padding: EdgeInsets.only(top: headerHeight + 70),
+                        padding: EdgeInsets.only(top: headerHeight + 75),
                         child: SingleChildScrollView(
                           physics: BouncingScrollPhysics(),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
+                            mainAxisSize: MainAxisSize.max,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
+                                  vertical: 4,
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
-
                                   children: [
                                     AppStyle.subheadingTextStyle("Ongoing"),
                                     Chip(
@@ -120,23 +100,33 @@ class HomeState extends State<Home> {
                                   ],
                                 ),
                               ),
-                              ListView.separated(
-                                separatorBuilder: (context, index) => Divider(
-                                  endIndent: 10,
-                                  indent: 10,
-                                  color: Colors.grey.shade300,
-                                ),
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
+                              onGoingTasks.isNotEmpty
+                                  ? ListView.separated(
+                                      separatorBuilder: (context, index) =>
+                                          Divider(
+                                            endIndent: 10,
+                                            indent: 10,
+                                            color: Colors.grey.shade300,
+                                          ),
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
 
-                                itemCount: onGoingTasks.length,
-                                itemBuilder: (context, index) {
-                                  return TaskTile(task: onGoingTasks[index]);
-                                },
-                              ),
+                                      itemCount: onGoingTasks.length,
+                                      itemBuilder: (context, index) {
+                                        return TaskTile(
+                                          task: onGoingTasks[index],
+                                        );
+                                      },
+                                    )
+                                  : Center(
+                                      child: AppStyle.secondaryHeading(
+                                        "All tasks done!",
+                                      ),
+                                    ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
+                                  vertical: 4,
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -169,6 +159,7 @@ class HomeState extends State<Home> {
                                   return TaskTile(task: completedTasks[index]);
                                 },
                               ),
+                              // SizedBox(height: 60),
                             ],
                           ),
                         ),
@@ -206,10 +197,7 @@ class HomeState extends State<Home> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AddTaskView(
-                                  taskTitleController: taskTitleController,
-                                  onSubmit: () => onSubmit(),
-                                ),
+                                builder: (context) => AddTaskView(),
                               ),
                             );
                           },
@@ -268,8 +256,17 @@ class HomeState extends State<Home> {
                 icon: Icon(Icons.notifications_outlined),
               ),
               IconButtonFilled(
-                icon: Icon(Icons.person_outline_rounded),
-                onPressed: () {},
+                icon: Icon(Icons.settings_outlined),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return SettingView();
+                      },
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -290,7 +287,7 @@ class HomeState extends State<Home> {
       padding: EdgeInsets.all(14).copyWith(bottom: 16),
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: Colors.grey.shade900,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
@@ -331,31 +328,28 @@ class HomeState extends State<Home> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnimatedDefaultTextStyle(
-                duration: Durations.medium1,
+              Text(
+                getProgress(tasksState.tasks)[0],
                 style: TextStyle(
+                  fontWeight: FontWeight.w400,
                   color: Colors.grey.shade500,
                   fontSize: headerHeight * 0.08,
                   height: 1,
                 ),
-                child: Text(getProgress(tasksState.tasks)[0]),
               ),
-              AnimatedDefaultTextStyle(
+              Text(
+                '${getProgress(tasksState.tasks)[1]}%',
                 style: TextStyle(
+                  fontWeight: FontWeight.w500,
                   color: Colors.white,
                   fontSize: headerHeight * 0.18,
                   height: 1,
                 ),
-                duration: Durations.medium4,
-                curve: Curves.easeInOut,
-                child: Text('${getProgress(tasksState.tasks)[1]}%'),
               ),
               Container(
                 width: double.maxFinite,
                 height: headerHeight * 0.15,
-                // margin: const EdgeInsets.all(
-                //   8,
-                // ).copyWith(top: 0),
+
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
@@ -370,8 +364,8 @@ class HomeState extends State<Home> {
                   child: FractionallySizedBox(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade400,
-                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.grey.shade900,
+                        borderRadius: BorderRadius.circular(7),
                       ),
                     ),
                   ),
