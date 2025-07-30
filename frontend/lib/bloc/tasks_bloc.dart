@@ -73,6 +73,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
             .where((task) => task.id != event.id)
             .toList();
         emit(TasksLoading());
+        emit(TaskActionMessage(message: "Task deleted!"));
         emit(TasksLoaded(tasks: updatedTasks));
       } else {
         emit(TaskActionMessage(message: "Error: Can't delete the task"));

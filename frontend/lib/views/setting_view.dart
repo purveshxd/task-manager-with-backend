@@ -6,9 +6,6 @@ class SettingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const List<String> listSettings = [
-      
-    ];
     return Scaffold(
       backgroundColor: AppStyle.appBackground(),
       appBar: AppBar(

@@ -1,14 +1,8 @@
 [
   {
-    "name": "Go gym Tommorow 💪",
-    "id": "5818727905825516",
-    "isComplete": true,
-    "desc": "go to the gym today"
-  },
-  {
     "name": "Add task",
     "id": "9512566976624253",
     "isComplete": true,
-    "desc": "New Description"
+    "desc": ""
   }
 ]

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasks_frontend/bloc/tasks_bloc.dart';
 import 'package:tasks_frontend/views/style.dart';
 import 'package:tasks_frontend/views/tasks.model.dart';
+import 'package:tasks_frontend/widget/icon_button_filled.dart';
 
 class AddTaskView extends StatefulWidget {
   const AddTaskView({super.key, this.task});
@@ -84,6 +85,18 @@ class _AddTaskViewState extends State<AddTaskView> {
       appBar: AppBar(
         title: Text(isEdit ? "Edit Task" : "Add Task"),
         backgroundColor: Colors.grey.shade100,
+        actionsPadding: EdgeInsets.symmetric(horizontal: 10),
+        actions: [
+          widget.task != null
+              ? IconButtonFilled(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    context.read<TasksBloc>().add(DeleteTask(widget.task!.id));
+                  },
+                  icon: Icon(Icons.delete_outline_sharp),
+                )
+              : SizedBox.shrink(),
+        ],
       ),
       body: SafeArea(
         child: Padding(

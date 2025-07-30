@@ -12,7 +12,7 @@ class IconButtonFilled extends StatelessWidget {
       onPressed: onPressed,
       icon: icon,
 
-      style: IconButton.styleFrom(backgroundColor: Colors.grey.shade300),
+      style: IconButton.styleFrom(backgroundColor: Colors.white),
     );
   }
 }
