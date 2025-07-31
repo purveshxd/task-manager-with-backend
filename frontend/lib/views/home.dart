@@ -31,11 +31,9 @@ class HomeState extends State<Home> {
         .where((element) => element.isComplete == true)
         .toList()
         .length;
-
     final total = tasks.length;
     final String stringFormat = "$done/$total";
     final per = ((done / total) * 100).floor();
-
     return [stringFormat, per];
   }
 
@@ -66,146 +64,144 @@ class HomeState extends State<Home> {
                   final onGoingTasks = tasksState.tasks
                       .where((task) => task.isComplete == false)
                       .toList();
-                  return Stack(
-                    fit: StackFit.expand,
-                    alignment: Alignment.topCenter,
-                    children: [
-                      // List below
-                      Padding(
-                        padding: EdgeInsets.only(top: headerHeight + 75),
-                        child: SingleChildScrollView(
-                          physics: BouncingScrollPhysics(),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 4,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    AppStyle.subheadingTextStyle("Ongoing"),
-                                    Chip(
-                                      backgroundColor: Colors.grey.shade300,
-                                      padding: EdgeInsets.all(1),
-                                      side: BorderSide.none,
-                                      label: Text(
-                                        onGoingTasks.length.toString(),
-                                        style: TextStyle(height: 1),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              onGoingTasks.isNotEmpty
-                                  ? ListView.separated(
-                                      separatorBuilder: (context, index) =>
-                                          Divider(
-                                            endIndent: 10,
-                                            indent: 10,
-                                            color: Colors.grey.shade300,
-                                          ),
-                                      physics: NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
 
-                                      itemCount: onGoingTasks.length,
-                                      itemBuilder: (context, index) {
-                                        return TaskTile(
-                                          task: onGoingTasks[index],
-                                        );
-                                      },
-                                    )
-                                  : Center(
-                                      child: AppStyle.secondaryHeading(
-                                        "All tasks done!",
-                                      ),
-                                    ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 4,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-
-                                  children: [
-                                    AppStyle.subheadingTextStyle("Completed"),
-                                    Chip(
-                                      backgroundColor: Colors.grey.shade300,
-                                      padding: EdgeInsets.all(1),
-                                      side: BorderSide.none,
-                                      label: Text(
-                                        completedTasks.length.toString(),
-                                        style: TextStyle(height: 1),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              ListView.separated(
-                                separatorBuilder: (context, index) => Divider(
-                                  endIndent: 10,
-                                  indent: 10,
-                                  color: Colors.grey.shade300,
-                                ),
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-
-                                itemCount: completedTasks.length,
-                                itemBuilder: (context, index) {
-                                  return TaskTile(task: completedTasks[index]);
-                                },
-                              ),
-                              // SizedBox(height: 60),
-                            ],
+                  if (tasksState.tasks.isEmpty) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        appbarWidget(),
+                        Spacer(),
+                        Text(
+                          "No tasks to work on right now",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade600,
                           ),
                         ),
-                      ),
+                        Spacer(),
+                        addTaskButtonFloating(context),
+                        SizedBox(height: 10),
+                      ],
+                    );
+                  } else {
+                    return Stack(
+                      fit: StackFit.expand,
+                      alignment: Alignment.topCenter,
+                      children: [
+                        // List below
+                        Padding(
+                          padding: EdgeInsets.only(top: headerHeight + 75),
+                          child: SingleChildScrollView(
+                            physics: BouncingScrollPhysics(),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 4,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      AppStyle.subheadingTextStyle("Ongoing"),
+                                      Chip(
+                                        backgroundColor: Colors.grey.shade300,
+                                        padding: EdgeInsets.all(1),
+                                        side: BorderSide.none,
+                                        label: Text(
+                                          onGoingTasks.length.toString(),
+                                          style: TextStyle(height: 1),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                onGoingTasks.isNotEmpty
+                                    ? ListView.separated(
+                                        separatorBuilder: (context, index) =>
+                                            Divider(
+                                              endIndent: 10,
+                                              indent: 10,
+                                              color: Colors.grey.shade300,
+                                            ),
+                                        physics: NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
 
-                      // Header on top
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          appbarWidget(),
-                          headerWidget(context, tasksState, headerHeight),
-                        ],
-                      ),
+                                        itemCount: onGoingTasks.length,
+                                        itemBuilder: (context, index) {
+                                          return TaskTile(
+                                            task: onGoingTasks[index],
+                                          );
+                                        },
+                                      )
+                                    : Center(
+                                        child: AppStyle.secondaryHeading(
+                                          "All tasks done!",
+                                        ),
+                                      ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 4,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
 
-                      Positioned(
-                        bottom: 10,
-                        // right: 35,
-                        child: FloatingActionButton.extended(
-                          foregroundColor: Colors.white,
-                          isExtended: true,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusGeometry.circular(50),
+                                    children: [
+                                      AppStyle.subheadingTextStyle("Completed"),
+                                      Chip(
+                                        backgroundColor: Colors.grey.shade300,
+                                        padding: EdgeInsets.all(1),
+                                        side: BorderSide.none,
+                                        label: Text(
+                                          completedTasks.length.toString(),
+                                          style: TextStyle(height: 1),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                ListView.separated(
+                                  separatorBuilder: (context, index) => Divider(
+                                    endIndent: 10,
+                                    indent: 10,
+                                    color: Colors.grey.shade300,
+                                  ),
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+
+                                  itemCount: completedTasks.length,
+                                  itemBuilder: (context, index) {
+                                    return TaskTile(
+                                      task: completedTasks[index],
+                                    );
+                                  },
+                                ),
+                                // SizedBox(height: 60),
+                              ],
+                            ),
                           ),
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            0,
-                            38,
-                            255,
-                          ),
-                          label: Text(
-                            "Add Task",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddTaskView(),
-                              ),
-                            );
-                          },
-                          icon: Icon(Icons.add_rounded),
                         ),
-                      ),
-                    ],
-                  );
+
+                        // Header on top
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            appbarWidget(),
+                            headerWidget(context, tasksState, headerHeight),
+                          ],
+                        ),
+
+                        Positioned(
+                          bottom: 10,
+                          child: addTaskButtonFloating(context),
+                        ),
+                      ],
+                    );
+                  }
                 } else {
                   return Center(child: CircularProgressIndicator());
                 }
@@ -214,6 +210,25 @@ class HomeState extends State<Home> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget addTaskButtonFloating(BuildContext context) {
+    return FloatingActionButton.extended(
+      foregroundColor: Colors.white,
+      isExtended: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadiusGeometry.circular(50),
+      ),
+      backgroundColor: const Color.fromARGB(255, 0, 38, 255),
+      label: Text("Add Task", style: TextStyle(color: Colors.white)),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddTaskView()),
+        );
+      },
+      icon: Icon(Icons.add_rounded),
     );
   }
 

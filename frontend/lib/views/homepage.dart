@@ -26,7 +26,13 @@ class Homepage extends StatelessWidget {
       if (taskTitle.isNotEmpty) {
         context.read<TasksBloc>().add(
           AddTask(
-            Tasks(name: taskTitle, id: '0', isComplete: false, desc: desc),
+            Tasks(
+              name: taskTitle,
+              id: '0',
+              isComplete: false,
+              desc: desc,
+              addNotification: false,
+            ),
           ),
         );
         taskTitleController.clear();
@@ -106,7 +112,7 @@ class Homepage extends StatelessWidget {
 
                         enableFeedback: true,
                         subtitle: task.desc.isNotEmpty
-                            ? Container( 
+                            ? Container(
                                 margin: EdgeInsets.all(0),
                                 padding: EdgeInsets.all(8),
                                 decoration: BoxDecoration(

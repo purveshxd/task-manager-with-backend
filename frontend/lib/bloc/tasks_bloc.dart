@@ -47,7 +47,10 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   Future<void> _onToggleTask(ToggleTask event, Emitter<TasksState> emit) async {
     if (state is TasksLoaded) {
       final currentTasks = List<Tasks>.from((state as TasksLoaded).tasks);
+
       final isToggled = await tasksProvider.toggleTask(event.id);
+      log("Toggle-$isToggled");
+      log("Toggle/id-${event.id}");
       if (isToggled) {
         final updatedTasks = (state as TasksLoaded).tasks.map((task) {
           if (task.id == event.id) {
@@ -55,10 +58,9 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
           }
           return task;
         }).toList();
-
         emit(TasksLoaded(tasks: updatedTasks));
       } else {
-        emit(TaskActionMessage(message: "Error: Can't delete the task"));
+        emit(TaskActionMessage(message: "Error: Can't toggle the task"));
         emit(TasksLoaded(tasks: currentTasks));
       }
     }
@@ -98,6 +100,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
           ongoingTasks: onGoingTasks,
         ),
       );
+      emit(TasksLoaded(tasks: completedTasks + onGoingTasks));
     }
   }
 

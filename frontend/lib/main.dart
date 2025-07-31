@@ -8,19 +8,22 @@ void main() {
   runApp(
     BlocProvider(
       create: (context) => TasksBloc(TasksProvider())..add(LoadTasks()),
+      
       child: MyApp(),
     ),
   );
 }
 
 /*
-  TODO: Work on the edit task page [Remove it OR merge it with Add task page]
-  TODO: Work on the backend as well
+  // TODO: Work on the edit task page [Remove it OR merge it with Add task page] 
+  // TODO: Work on the backend as well
+  TODO: Add date selection in the app
+  /// 1. Add it to the object [Tasks] model
+  /// 2. To the backend as well
+  TODO: Add reminder options for the tasks
 */
 class MyApp extends StatelessWidget {
-  final TasksProvider tasksProvider = TasksProvider();
-
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

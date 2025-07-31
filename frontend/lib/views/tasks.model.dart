@@ -6,16 +6,25 @@ class Tasks {
   String id;
   bool isComplete;
   String desc;
+  bool addNotification;
 
   Tasks({
+    required this.addNotification,
     required this.name,
     required this.id,
     required this.isComplete,
     required this.desc,
   });
 
-  Tasks copyWith({String? name, String? id, bool? isComplete, String? desc}) {
+  Tasks copyWith({
+    String? name,
+    String? id,
+    bool? isComplete,
+    String? desc,
+    bool? addNotification,
+  }) {
     return Tasks(
+      addNotification: addNotification ?? this.addNotification,
       name: name ?? this.name,
       id: id ?? this.id,
       isComplete: isComplete ?? this.isComplete,
@@ -25,6 +34,7 @@ class Tasks {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'addNotification': addNotification,
       'name': name,
       'id': id,
       'isComplete': isComplete,
@@ -34,6 +44,7 @@ class Tasks {
 
   factory Tasks.fromMap(Map<String, dynamic> map) {
     return Tasks(
+      addNotification: map['addNotification'] as bool,
       name: map['name'] as String,
       id: map['id'] as String,
       isComplete: map['isComplete'] as bool,
@@ -48,7 +59,7 @@ class Tasks {
 
   @override
   String toString() {
-    return 'Tasks(name: $name, id: $id, isComplete: $isComplete, desc: $desc)';
+    return 'Tasks(name: $name, id: $id, isComplete: $isComplete, desc: $desc, addNotification: $addNotification)';
   }
 
   @override
@@ -58,11 +69,16 @@ class Tasks {
     return other.name == name &&
         other.id == id &&
         other.isComplete == isComplete &&
-        other.desc == desc;
+        other.desc == desc &&
+        other.addNotification == addNotification;
   }
 
   @override
   int get hashCode {
-    return name.hashCode ^ id.hashCode ^ isComplete.hashCode ^ desc.hashCode;
+    return name.hashCode ^
+        id.hashCode ^
+        isComplete.hashCode ^
+        desc.hashCode ^
+        addNotification.hashCode;
   }
 }

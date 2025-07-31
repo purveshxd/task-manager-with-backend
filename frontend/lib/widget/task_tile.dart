@@ -12,26 +12,28 @@ class TaskTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TasksBloc, TasksState>(
       builder: (context, state) {
-        return InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddTaskView(task: task)),
-            );
-          },
-          child: Container(
-            padding: EdgeInsets.all(12).copyWith(bottom: 0, top: 4),
-            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              spacing: 8,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  flex: 5,
+        return Container(
+          padding: EdgeInsets.all(12).copyWith(bottom: 0, top: 4),
+          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            spacing: 8,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                flex: 7,
+                child: GestureDetector(
+                  // borderRadius: BorderRadius.circular(12),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddTaskView(task: task),
+                      ),
+                    );
+                  },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -71,27 +73,27 @@ class TaskTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                Flexible(
-                  child: InkWell(
-                    onTap: () {
-                      context.read<TasksBloc>().add(ToggleTask(task.id));
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(0.5),
-                      decoration: BoxDecoration(
-                        border: BoxBorder.all(
-                          color: Colors.grey.shade300,
-                          width: 1.5,
-                        ),
-
-                        borderRadius: BorderRadiusDirectional.circular(8),
+              ),
+              Flexible(
+                child: InkWell(
+                  onTap: () {
+                    context.read<TasksBloc>().add(ToggleTask(task.id));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(0.5),
+                    decoration: BoxDecoration(
+                      border: BoxBorder.all(
+                        color: Colors.grey.shade300,
+                        width: 1.5,
                       ),
-                      child: Icon(task.isComplete ? Icons.check_rounded : null),
+
+                      borderRadius: BorderRadiusDirectional.circular(8),
                     ),
+                    child: Icon(task.isComplete ? Icons.check_rounded : null),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

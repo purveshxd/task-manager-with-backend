@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasks_frontend/bloc/tasks_bloc.dart';
@@ -17,8 +19,11 @@ class AddTaskView extends StatefulWidget {
 class _AddTaskViewState extends State<AddTaskView> {
   late TextEditingController titleController;
   late TextEditingController descController;
-  TimeOfDay selectedTime = TimeOfDay.now();
+  TimeOfDay timeOfDay = TimeOfDay.now();
+  DateTime dateTime = DateTime.now();
+
   bool isEdit = false;
+  bool addNotification = false;
   FocusNode focusNode = FocusNode();
 
   @override
@@ -31,14 +36,27 @@ class _AddTaskViewState extends State<AddTaskView> {
   }
 
   Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? timer = await showTimePicker(
+    final DateTime? timer = await showDatePicker(
+      confirmText: "Set Time",
+      currentDate: DateTime.now(),
       context: context,
-      initialTime: selectedTime,
+      firstDate: DateTime.now().subtract(Duration(days: 1)),
+      lastDate: DateTime.now().add(Duration(days: 10000)),
+    );
+    if (timer != null && timer != dateTime) {
+      setState(() {
+        dateTime = timer;
+      });
+    }
+
+    final TimeOfDay? timerPick = await showTimePicker(
+      context: context,
+      initialTime: timeOfDay,
       initialEntryMode: TimePickerEntryMode.dial,
     );
-    if (timer != null && timer != selectedTime) {
+    if (timerPick != null && timerPick != timeOfDay) {
       setState(() {
-        selectedTime = timer;
+        timeOfDay = timerPick;
       });
     }
   }
@@ -48,8 +66,12 @@ class _AddTaskViewState extends State<AddTaskView> {
       context.read<TasksBloc>().add(
         AddTask(
           Tasks(
+            addNotification: addNotification,
             name: titleController.text.trim(),
-            id: '0',
+            id: (Random().nextDouble() * 10)
+                .toString()
+                .replaceAll('.', '')
+                .toString(),
             isComplete: false,
             desc: descController.text.trim().isEmpty
                 ? ""
@@ -108,7 +130,7 @@ class _AddTaskViewState extends State<AddTaskView> {
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
-                spacing: 8,
+                spacing: 10,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
@@ -119,6 +141,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                     ),
                   ),
                   TextField(
+                    textInputAction: TextInputAction.next,
                     controller: titleController,
                     decoration: AppStyle.textFieldDecoration(label: ""),
                   ),
@@ -141,32 +164,80 @@ class _AddTaskViewState extends State<AddTaskView> {
                       ),
                     ],
                   ),
+
                   TextField(
+                    textInputAction: TextInputAction.done,
                     controller: descController,
                     minLines: null,
                     maxLines: null,
                     decoration: AppStyle.textFieldDecoration(label: ""),
                   ),
                   ListTile(
+                    enabled: addNotification,
                     contentPadding: EdgeInsets.all(0),
-                    leading: const Icon(Icons.notifications_rounded),
+
                     onTap: () => _selectTime(context),
-                    trailing: Chip(
-                      label: Text(
-                        selectedTime.format(context),
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      backgroundColor: Colors.white,
-                      side: BorderSide.none,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 4,
+                      children: [
+                        Chip(
+                          label: Text(
+                            "${dateTime.day}/${dateTime.month}/${dateTime.year}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: addNotification
+                                  ? Colors.black
+                                  : Colors.grey.shade400,
+                            ),
+                          ),
+                          backgroundColor: Colors.white,
+                          side: BorderSide.none,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        Chip(
+                          label: Text(
+                            "${timeOfDay.hourOfPeriod}:${timeOfDay.minute} ${timeOfDay.period.name.toUpperCase()}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: addNotification
+                                  ? Colors.black
+                                  : Colors.grey.shade400,
+                            ),
+                          ),
+                          backgroundColor: Colors.white,
+                          side: BorderSide.none,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        IconButton(
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              addNotification = !addNotification;
+                            });
+                          },
+                          icon: Icon(
+                            addNotification
+                                ? Icons.close_rounded
+                                : Icons.add_rounded,
+                          ),
+                        ),
+                      ],
                     ),
-                    title: const Text(
-                      "Add Reminder",
+                    title: Text(
+                      "Notification",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: addNotification
+                            ? Colors.black
+                            : Colors.grey.shade400,
                       ),
                     ),
                   ),

@@ -27,7 +27,7 @@ app.post('/add-task', (req, res) => {
     // console.log(req.body.id);
     task.isComplete = false
 
-    task.id = (tasks.length + Math.random() * 10).toString().replace('.', '').toString();
+    // task.id = (tasks.length + Math.random() * 10).toString().replace('.', '').toString();
     tasks.push(task)
     writeTasks(tasks)
     res.status(201).json(task)
