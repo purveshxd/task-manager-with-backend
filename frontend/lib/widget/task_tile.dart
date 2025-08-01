@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasks_frontend/bloc/tasks_bloc.dart';
-import 'package:tasks_frontend/views/add_task.view.dart';
-import 'package:tasks_frontend/views/tasks.model.dart';
+import 'package:tasks_frontend/feature/add_task.view.dart';
+import 'package:tasks_frontend/feature/tasks.model.dart';
 
 class TaskTile extends StatelessWidget {
   const TaskTile({super.key, required this.task});
@@ -12,6 +12,9 @@ class TaskTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TasksBloc, TasksState>(
       builder: (context, state) {
+        TimeOfDay timeOfDay = TimeOfDay.fromDateTime(
+          task.notificationDateTime ?? DateTime.now(),
+        );
         return Container(
           padding: EdgeInsets.all(12).copyWith(bottom: 0, top: 4),
           margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
@@ -25,7 +28,6 @@ class TaskTile extends StatelessWidget {
               Expanded(
                 flex: 7,
                 child: GestureDetector(
-                  // borderRadius: BorderRadius.circular(12),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -36,7 +38,7 @@ class TaskTile extends StatelessWidget {
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -62,14 +64,16 @@ class TaskTile extends StatelessWidget {
                           : SizedBox.shrink(),
                       SizedBox(height: 1),
 
-                      Text(
-                        "5.8.25, 2:30 PM",
-                        style: TextStyle(
-                          color: Colors.grey.shade400,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
-                      ),
+                      task.notificationDateTime != null
+                          ? Text(
+                              "${task.notificationDateTime!.day}.${task.notificationDateTime!.month}.${task.notificationDateTime!.year} | ${timeOfDay.hourOfPeriod}:${timeOfDay.minute} ${timeOfDay.period.name.toUpperCase()}",
+                              style: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            )
+                          : SizedBox.shrink(),
                     ],
                   ),
                 ),

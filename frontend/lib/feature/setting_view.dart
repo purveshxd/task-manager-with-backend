@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tasks_frontend/views/style.dart';
+import 'package:tasks_frontend/feature/style.dart';
 
 class SettingView extends StatelessWidget {
   const SettingView({super.key});

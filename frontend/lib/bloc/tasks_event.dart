@@ -20,13 +20,13 @@ class UpdateTask extends TasksEvent {
 
 // Event: Toggle completion of a task
 class ToggleTask extends TasksEvent {
-  final String id;
+  final int id;
   ToggleTask(this.id);
 }
 
 // Event: Delete a task
 class DeleteTask extends TasksEvent {
-  final String id;
+  final int id;
   DeleteTask(this.id);
 }
 

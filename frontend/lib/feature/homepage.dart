@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:tasks_frontend/bloc/tasks_bloc.dart';
-import 'package:tasks_frontend/views/add_task.view.dart';
-import 'package:tasks_frontend/views/setting_view.dart';
-import 'package:tasks_frontend/views/style.dart';
-import 'package:tasks_frontend/views/tasks.model.dart';
+import 'package:tasks_frontend/feature/add_task.view.dart';
+import 'package:tasks_frontend/feature/setting_view.dart';
+import 'package:tasks_frontend/feature/style.dart';
+import 'package:tasks_frontend/feature/tasks.model.dart';
 import 'package:tasks_frontend/widget/icon_button_filled.dart';
 import 'package:tasks_frontend/widget/task_tile.dart';
 
@@ -142,28 +142,34 @@ class HomeState extends State<Home> {
                                           "All tasks done!",
                                         ),
                                       ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 4,
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
+                                completedTasks.isEmpty
+                                    ? SizedBox()
+                                    : Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 4,
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
 
-                                    children: [
-                                      AppStyle.subheadingTextStyle("Completed"),
-                                      Chip(
-                                        backgroundColor: Colors.grey.shade300,
-                                        padding: EdgeInsets.all(1),
-                                        side: BorderSide.none,
-                                        label: Text(
-                                          completedTasks.length.toString(),
-                                          style: TextStyle(height: 1),
+                                          children: [
+                                            AppStyle.subheadingTextStyle(
+                                              "Completed",
+                                            ),
+                                            Chip(
+                                              backgroundColor:
+                                                  Colors.grey.shade300,
+                                              padding: EdgeInsets.all(1),
+                                              side: BorderSide.none,
+                                              label: Text(
+                                                completedTasks.length
+                                                    .toString(),
+                                                style: TextStyle(height: 1),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
                                 ListView.separated(
                                   separatorBuilder: (context, index) => Divider(
                                     endIndent: 10,

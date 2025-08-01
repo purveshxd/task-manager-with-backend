@@ -2,14 +2,14 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:tasks_frontend/views/tasks.model.dart';
-import 'package:tasks_frontend/views/tasks_provider.dart';
+import 'package:tasks_frontend/feature/tasks.model.dart';
+import 'package:tasks_frontend/localstorage/local_storage.dart';
 
 part 'tasks_event.dart';
 part 'tasks_state.dart';
 
 class TasksBloc extends Bloc<TasksEvent, TasksState> {
-  final TasksProvider tasksProvider;
+  final LocalStorageRepo tasksProvider;
 
   TasksBloc(this.tasksProvider) : super(TasksInitial()) {
     on<LoadTasks>(_onLoadTasks);
@@ -26,6 +26,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       final tasks = await tasksProvider.getTasks();
       emit(TasksLoaded(tasks: tasks));
     } catch (e) {
+      log(e.toString());
       emit(TasksError(e.toString()));
     }
   }
@@ -116,7 +117,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       if (index != -1) {
         // Replace old task with the updated one
         currentTasksList[index] = event.updatedTask;
-        log("UpdatedTask-${event.updatedTask.toJson()}");
+        log("UpdatedTask-${event.updatedTask}");
         // Optionally call API to persist the update
         final isUpdated = await tasksProvider.updateTask(event.updatedTask);
 

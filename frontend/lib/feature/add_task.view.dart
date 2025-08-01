@@ -1,10 +1,12 @@
-import 'dart:math';
+import 'dart:developer';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasks_frontend/bloc/tasks_bloc.dart';
-import 'package:tasks_frontend/views/style.dart';
-import 'package:tasks_frontend/views/tasks.model.dart';
+import 'package:tasks_frontend/feature/style.dart';
+import 'package:tasks_frontend/feature/tasks.model.dart';
+import 'package:tasks_frontend/notification_handler.dart';
 import 'package:tasks_frontend/widget/icon_button_filled.dart';
 
 class AddTaskView extends StatefulWidget {
@@ -22,6 +24,8 @@ class _AddTaskViewState extends State<AddTaskView> {
   TimeOfDay timeOfDay = TimeOfDay.now();
   DateTime dateTime = DateTime.now();
 
+  final notificationHandler = NotificationProvider();
+
   bool isEdit = false;
   bool addNotification = false;
   FocusNode focusNode = FocusNode();
@@ -30,6 +34,7 @@ class _AddTaskViewState extends State<AddTaskView> {
   void initState() {
     super.initState();
     isEdit = widget.task != null;
+    addNotification = widget.task?.addNotification ?? false;
 
     titleController = TextEditingController(text: widget.task?.name ?? "");
     descController = TextEditingController(text: widget.task?.desc ?? "");
@@ -59,6 +64,23 @@ class _AddTaskViewState extends State<AddTaskView> {
         timeOfDay = timerPick;
       });
     }
+
+    if (addNotification) {
+      log(
+        "Add Timer Noti-$addNotification | ${dateTime.day}/${dateTime.month}/${dateTime.year} | ${timeOfDay.hourOfPeriod}:${timeOfDay.minute} ${timeOfDay.period.name.toUpperCase()}",
+      );
+      await notificationHandler.scheduleMinuteNotification(
+        title: titleController.text.trim(),
+        body: descController.text.trim(),
+        scheduledDate: DateTime(
+          dateTime.year,
+          dateTime.month,
+          dateTime.day,
+          timeOfDay.hour,
+          timeOfDay.minute,
+        ),
+      );
+    }
   }
 
   void onSubmit() {
@@ -66,12 +88,15 @@ class _AddTaskViewState extends State<AddTaskView> {
       context.read<TasksBloc>().add(
         AddTask(
           Tasks(
+            notificationDateTime: DateTime(
+              dateTime.year,
+              dateTime.month,
+              dateTime.day,
+              timeOfDay.hour,
+              timeOfDay.minute,
+            ),
             addNotification: addNotification,
             name: titleController.text.trim(),
-            id: (Random().nextDouble() * 10)
-                .toString()
-                .replaceAll('.', '')
-                .toString(),
             isComplete: false,
             desc: descController.text.trim().isEmpty
                 ? ""
@@ -89,6 +114,14 @@ class _AddTaskViewState extends State<AddTaskView> {
   void handleSubmit() {
     if (isEdit) {
       Tasks editTask = widget.task!.copyWith(
+        notificationDateTime: DateTime(
+          dateTime.year,
+          dateTime.month,
+          dateTime.day,
+          timeOfDay.hour,
+          timeOfDay.minute,
+        ),
+        addNotification: addNotification,
         name: titleController.text.trim(),
         desc: descController.text.trim(),
       );
@@ -96,8 +129,15 @@ class _AddTaskViewState extends State<AddTaskView> {
     } else {
       onSubmit();
     }
-
     Navigator.pop(context);
+  }
+
+  // request notification permission
+  Future<void> requestPermission() async {
+    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (!isAllowed) {
+      await AwesomeNotifications().requestPermissionToSendNotifications();
+    }
   }
 
   @override
@@ -218,7 +258,8 @@ class _AddTaskViewState extends State<AddTaskView> {
                             backgroundColor: Colors.white,
                             foregroundColor: Colors.black,
                           ),
-                          onPressed: () {
+                          onPressed: () async {
+                            await requestPermission();
                             setState(() {
                               addNotification = !addNotification;
                             });
