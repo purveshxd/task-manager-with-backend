@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,7 +52,7 @@ class HomeState extends State<Home> {
       child: AnnotatedRegion(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
-          backgroundColor: Colors.grey.shade100,
+          backgroundColor: AppStyle.appBackground(),
           body: SafeArea(
             child: BlocBuilder<TasksBloc, TasksState>(
               builder: (context, tasksState) {
@@ -226,7 +227,7 @@ class HomeState extends State<Home> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadiusGeometry.circular(50),
       ),
-      backgroundColor: const Color.fromARGB(255, 0, 38, 255),
+      // backgroundColor: const Color.fromARGB(255, 0, 38, 255),
       label: Text("Add Task", style: TextStyle(color: Colors.white)),
       onPressed: () {
         Navigator.push(
@@ -273,7 +274,23 @@ class HomeState extends State<Home> {
           Row(
             children: [
               IconButtonFilled(
-                onPressed: () {},
+                onPressed: () async {
+                  await AwesomeNotifications().createNotification(
+                    actionButtons: [
+                      NotificationActionButton(key: '01', label: 'Done'),
+                      NotificationActionButton(key: '02', label: 'Cancel'),
+                    ],
+
+                    content: NotificationContent(
+                      autoDismissible: false,
+                      criticalAlert: true,
+                      locked: true,
+                      title: 'TEST',
+                      id: 02,
+                      channelKey: 'task_channel',
+                    ),
+                  );
+                },
                 icon: Icon(Icons.notifications_outlined),
               ),
               IconButtonFilled(

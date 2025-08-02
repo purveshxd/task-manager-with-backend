@@ -22,7 +22,6 @@ class NotificationProvider {
         channelKey: 'task_channel',
         title: title,
         body: body,
-
         notificationLayout: NotificationLayout.Default,
       ),
       schedule: NotificationCalendar(

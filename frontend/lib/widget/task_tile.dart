@@ -44,6 +44,7 @@ class TaskTile extends StatelessWidget {
                       Text(
                         task.name[0].toUpperCase() + task.name.substring(1),
                         style: const TextStyle(
+                          fontSize: 16,
                           color: Colors.black,
                           fontWeight: FontWeight.w600,
                         ),
@@ -57,8 +58,9 @@ class TaskTile extends StatelessWidget {
                               overflow: TextOverflow.fade,
                               softWrap: false,
                               style: TextStyle(
+                                fontSize: 14,
                                 color: Colors.grey.shade400,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w400,
                               ),
                             )
                           : SizedBox.shrink(),

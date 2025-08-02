@@ -38,7 +38,7 @@ class _AddTaskViewState extends State<AddTaskView> {
     descController = TextEditingController(text: widget.task?.desc ?? "");
   }
 
-  Future<void> _selectTime(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? timer = await showDatePicker(
       confirmText: "Set Time",
       currentDate: DateTime.now(),
@@ -51,6 +51,12 @@ class _AddTaskViewState extends State<AddTaskView> {
         dateTime = timer;
       });
     }
+    if (context.mounted) {
+      await _selectTime(context);
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
     if (context.mounted) {
       final TimeOfDay? timerPick = await showTimePicker(
         context: context,
@@ -301,7 +307,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                                   ),
                                   Spacer(),
                                   ActionChip(
-                                    onPressed: () => _selectTime(context),
+                                    onPressed: () => _selectDate(context),
                                     label: Text(
                                       "${dateTime.day}/${dateTime.month}/${dateTime.year}",
                                       style: TextStyle(
@@ -319,7 +325,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                                     ),
                                   ),
                                   ActionChip(
-                                    onPressed: () => {},
+                                    onPressed: () => _selectTime(context),
                                     label: Text(
                                       "${timeOfDay.hourOfPeriod}:${timeOfDay.minute} ${timeOfDay.period.name.toUpperCase()}",
                                       style: TextStyle(

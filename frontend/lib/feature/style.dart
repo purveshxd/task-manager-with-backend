@@ -17,7 +17,7 @@ class AppStyle {
 
   static ButtonStyle primaryButtonColor() {
     return FilledButton.styleFrom(
-      backgroundColor: Color.fromARGB(255, 0, 38, 255),
+      backgroundColor: Color(0xFF0026FF),
       foregroundColor: Colors.white,
     );
   }

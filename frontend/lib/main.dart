@@ -12,6 +12,7 @@ void main() async {
   // Initialize Awesome Notifications
   AwesomeNotifications().initialize(debug: true, null, [
     NotificationChannel(
+      criticalAlerts: true,
       channelKey: 'task_channel',
       channelName: 'Task Notifications',
       channelDescription: 'Notification channel for task reminders',
@@ -32,13 +33,11 @@ void main() async {
 }
 
 /*
-  // TODO: Work on the edit task page [Remove it OR merge it with Add task page] 
-  // TODO: Work on the backend as well
-  TODO: Add date selection in the app
-  /// 1. Add it to the object [Tasks] model
-  /// 2. To the backend as well
-  TODO: Add reminder options for the tasks
+
+  TODO - 
+
 */
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -49,7 +48,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Poppins',
         useMaterial3: true,
-        primarySwatch: Colors.indigo,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color(0xFF0026FF),
+          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+        ),
       ),
       home: Home(),
     );
