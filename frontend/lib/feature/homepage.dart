@@ -257,6 +257,7 @@ class HomeState extends State<Home> {
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   height: 1,
+                  // color: Theme.of(context).colorScheme.primary,
                   color: Colors.black,
                 ),
               ),
@@ -266,7 +267,8 @@ class HomeState extends State<Home> {
                   fontSize: 28,
                   height: 1,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade400,
+                  color: Colors.grey.shade500,
+                  // color: Theme.of(context).colorScheme.secondaryContainer,
                 ),
               ),
             ],
@@ -325,7 +327,8 @@ class HomeState extends State<Home> {
       padding: EdgeInsets.all(14).copyWith(bottom: 16),
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.grey.shade900,
+        // color: Theme.of(context).colorScheme.onSurface,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(

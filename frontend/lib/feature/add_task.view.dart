@@ -165,10 +165,12 @@ class _AddTaskViewState extends State<AddTaskView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      // backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: Text(isEdit ? "Edit Task" : "Add Task"),
-        backgroundColor: Colors.grey.shade100,
+        // backgroundColor: Colors.grey.shade100,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
           widget.task != null
