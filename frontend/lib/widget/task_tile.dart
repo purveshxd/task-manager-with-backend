@@ -63,8 +63,7 @@ class TaskTile extends StatelessWidget {
                             )
                           : SizedBox.shrink(),
                       SizedBox(height: 1),
-
-                      task.notificationDateTime != null
+                      task.addNotification
                           ? Text(
                               "${task.notificationDateTime!.day}.${task.notificationDateTime!.month}.${task.notificationDateTime!.year} | ${timeOfDay.hourOfPeriod}:${timeOfDay.minute} ${timeOfDay.period.name.toUpperCase()}",
                               style: TextStyle(

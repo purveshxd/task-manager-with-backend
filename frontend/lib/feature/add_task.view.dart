@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,11 +5,11 @@ import 'package:tasks_frontend/bloc/tasks_bloc.dart';
 import 'package:tasks_frontend/feature/style.dart';
 import 'package:tasks_frontend/feature/tasks.model.dart';
 import 'package:tasks_frontend/notification_handler.dart';
+import 'package:tasks_frontend/widget/custom_action_chip.dart';
 import 'package:tasks_frontend/widget/icon_button_filled.dart';
 
 class AddTaskView extends StatefulWidget {
   const AddTaskView({super.key, this.task});
-
   final Tasks? task;
 
   @override
@@ -53,22 +51,19 @@ class _AddTaskViewState extends State<AddTaskView> {
         dateTime = timer;
       });
     }
-
-    final TimeOfDay? timerPick = await showTimePicker(
-      context: context,
-      initialTime: timeOfDay,
-      initialEntryMode: TimePickerEntryMode.dial,
-    );
-    if (timerPick != null && timerPick != timeOfDay) {
-      setState(() {
-        timeOfDay = timerPick;
-      });
-    }
-
-    if (addNotification) {
-      log(
-        "Add Timer Noti-$addNotification | ${dateTime.day}/${dateTime.month}/${dateTime.year} | ${timeOfDay.hourOfPeriod}:${timeOfDay.minute} ${timeOfDay.period.name.toUpperCase()}",
+    if (context.mounted) {
+      final TimeOfDay? timerPick = await showTimePicker(
+        context: context,
+        initialTime: timeOfDay,
+        initialEntryMode: TimePickerEntryMode.dial,
       );
+      if (timerPick != null && timerPick != timeOfDay) {
+        setState(() {
+          timeOfDay = timerPick;
+        });
+      }
+    }
+    if (addNotification) {
       await notificationHandler.scheduleMinuteNotification(
         title: titleController.text.trim(),
         body: descController.text.trim(),
@@ -88,13 +83,15 @@ class _AddTaskViewState extends State<AddTaskView> {
       context.read<TasksBloc>().add(
         AddTask(
           Tasks(
-            notificationDateTime: DateTime(
-              dateTime.year,
-              dateTime.month,
-              dateTime.day,
-              timeOfDay.hour,
-              timeOfDay.minute,
-            ),
+            notificationDateTime: addNotification
+                ? DateTime(
+                    dateTime.year,
+                    dateTime.month,
+                    dateTime.day,
+                    timeOfDay.hour,
+                    timeOfDay.minute,
+                  )
+                : null,
             addNotification: addNotification,
             name: titleController.text.trim(),
             isComplete: false,
@@ -114,17 +111,20 @@ class _AddTaskViewState extends State<AddTaskView> {
   void handleSubmit() {
     if (isEdit) {
       Tasks editTask = widget.task!.copyWith(
-        notificationDateTime: DateTime(
-          dateTime.year,
-          dateTime.month,
-          dateTime.day,
-          timeOfDay.hour,
-          timeOfDay.minute,
-        ),
+        notificationDateTime: addNotification
+            ? DateTime(
+                dateTime.year,
+                dateTime.month,
+                dateTime.day,
+                timeOfDay.hour,
+                timeOfDay.minute,
+              )
+            : null,
         addNotification: addNotification,
         name: titleController.text.trim(),
         desc: descController.text.trim(),
       );
+
       context.read<TasksBloc>().add(UpdateTask(editTask));
     } else {
       onSubmit();
@@ -138,6 +138,22 @@ class _AddTaskViewState extends State<AddTaskView> {
     if (!isAllowed) {
       await AwesomeNotifications().requestPermissionToSendNotifications();
     }
+  }
+
+  List<List> repeatList = [
+    ["Daily", true],
+    ["Weekly", false],
+    ["Monthly", false],
+  ];
+
+  void toggleChips(bool value, int index) {
+    setState(() {
+      List labelbool = repeatList.firstWhere((list) => list[1] == true);
+      labelbool[1] = false;
+      repeatList[index][1] = value;
+      List removedChip = repeatList.removeAt(index);
+      repeatList.insert(0, removedChip);
+    });
   }
 
   @override
@@ -165,20 +181,23 @@ class _AddTaskViewState extends State<AddTaskView> {
           padding: const EdgeInsets.all(16.0).copyWith(bottom: 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
                 spacing: 10,
-                crossAxisAlignment: CrossAxisAlignment.start,
+
                 children: [
-                  const Text(
-                    "Task",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  Row(
+                    children: [
+                      const Text(
+                        "Task",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                   TextField(
                     textInputAction: TextInputAction.next,
@@ -212,78 +231,172 @@ class _AddTaskViewState extends State<AddTaskView> {
                     maxLines: null,
                     decoration: AppStyle.textFieldDecoration(label: ""),
                   ),
-                  ListTile(
-                    enabled: addNotification,
-                    contentPadding: EdgeInsets.all(0),
-
-                    onTap: () => _selectTime(context),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 4,
+                  Row(
+                    spacing: 8,
+                    children: [
+                      const Text(
+                        "Notification",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Flexible(
+                        child: Container(
+                          height: 2,
+                          width: double.maxFinite,
+                          color: Colors.grey.shade300,
+                        ),
+                      ),
+                      IconButton(
+                        splashColor: Colors.grey.shade50,
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: addNotification
+                              ? Colors.black
+                              : Colors.grey.shade400,
+                        ),
+                        onPressed: () async {
+                          await requestPermission();
+                          setState(() {
+                            addNotification = !addNotification;
+                          });
+                        },
+                        icon: AnimatedRotation(
+                          duration: Durations.medium4,
+                          turns: addNotification ? .375 : 0,
+                          child: Icon(Icons.add_rounded),
+                        ),
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.all(0),
+                      ),
+                    ],
+                  ),
+                  AnimatedScale(
+                    scale: !addNotification ? 0 : 1,
+                    duration: Durations.medium4,
+                    curve: Curves.easeInOutBack,
+                    alignment: Alignment.topRight,
+                    child: Column(
+                      spacing: 8,
                       children: [
-                        Chip(
-                          label: Text(
-                            "${dateTime.day}/${dateTime.month}/${dateTime.year}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: addNotification
-                                  ? Colors.black
-                                  : Colors.grey.shade400,
-                            ),
-                          ),
-                          backgroundColor: Colors.white,
-                          side: BorderSide.none,
-                          shape: RoundedRectangleBorder(
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                        ),
-                        Chip(
-                          label: Text(
-                            "${timeOfDay.hourOfPeriod}:${timeOfDay.minute} ${timeOfDay.period.name.toUpperCase()}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: addNotification
-                                  ? Colors.black
-                                  : Colors.grey.shade400,
-                            ),
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                spacing: 5,
+                                children: [
+                                  SizedBox(width: 5),
+                                  Text(
+                                    "Date | Time",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  ActionChip(
+                                    onPressed: () => _selectTime(context),
+                                    label: Text(
+                                      "${dateTime.day}/${dateTime.month}/${dateTime.year}",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: addNotification
+                                            ? Colors.black
+                                            : Colors.grey.shade400,
+                                      ),
+                                    ),
+                                    backgroundColor: Colors.grey.shade200,
+
+                                    side: BorderSide.none,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  ActionChip(
+                                    onPressed: () => {},
+                                    label: Text(
+                                      "${timeOfDay.hourOfPeriod}:${timeOfDay.minute} ${timeOfDay.period.name.toUpperCase()}",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: addNotification
+                                            ? Colors.black
+                                            : Colors.grey.shade400,
+                                      ),
+                                    ),
+                                    backgroundColor: Colors.grey.shade200,
+                                    side: BorderSide.none,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          backgroundColor: Colors.white,
-                          side: BorderSide.none,
-                          shape: RoundedRectangleBorder(
+                        ),
+                        Row(
+                          spacing: 8,
+                          children: [
+                            const Text(
+                              "Repeat",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Flexible(
+                              child: Container(
+                                height: 2,
+                                width: double.maxFinite,
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          width: double.maxFinite,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 1,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                        ),
-                        IconButton(
-                          style: IconButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                          ),
-                          onPressed: () async {
-                            await requestPermission();
-                            setState(() {
-                              addNotification = !addNotification;
-                            });
-                          },
-                          icon: Icon(
-                            addNotification
-                                ? Icons.close_rounded
-                                : Icons.add_rounded,
+
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Wrap(
+                                spacing: 6,
+                                // runSpacing: 0,
+                                children: List.generate(
+                                  repeatList.length,
+                                  (index) => CustomActionChip(
+                                    label: repeatList[index][0],
+                                    isSelected: repeatList[index][1],
+                                    onPressed: (value) =>
+                                        toggleChips(value, index),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                    title: Text(
-                      "Notification",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: addNotification
-                            ? Colors.black
-                            : Colors.grey.shade400,
-                      ),
-                    ),
                   ),
                 ],
               ),
+
+              // ! Bottom Buttons -------------------
               Spacer(),
               Row(
                 spacing: 16,

@@ -1,5 +1,3 @@
-
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 
 class NotificationProvider {
@@ -34,9 +32,6 @@ class NotificationProvider {
         day: scheduledDate.day,
         hour: scheduledDate.hour,
         minute: scheduledDate.minute,
-        second: 0,
-        millisecond: 0,
-        repeats: false,
       ),
     );
   }
