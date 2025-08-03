@@ -1,41 +1,27 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tasks_frontend/bloc/tasks_bloc.dart';
-import 'package:tasks_frontend/feature/homepage.dart';
+import 'package:tasks_frontend/bloc/task_bloc/tasks_bloc.dart';
 import 'package:tasks_frontend/localstorage/local_storage.dart';
+import 'package:tasks_frontend/notification_handler.dart';
+import 'package:tasks_frontend/views/homepage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStorageRepo.init();
 
   // Initialize Awesome Notifications
-  AwesomeNotifications().initialize(debug: true, null, [
-    NotificationChannel(
-      criticalAlerts: true,
-      channelKey: 'task_channel',
-      channelName: 'Task Notifications',
-      channelDescription: 'Notification channel for task reminders',
-      defaultColor: Colors.blue,
-      locked: true,
-      ledColor: Colors.white,
-      importance: NotificationImportance.High,
-    ),
-  ]);
+  await NotificationProvider.init();
 
   runApp(
     BlocProvider(
       create: (context) => TasksBloc(LocalStorageRepo())..add(LoadTasks()),
-
       child: MyApp(),
     ),
   );
 }
 
 /*
-
   TODO - 
-
 */
 
 class MyApp extends StatelessWidget {

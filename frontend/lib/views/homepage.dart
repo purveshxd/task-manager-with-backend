@@ -1,15 +1,19 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
-import 'package:tasks_frontend/bloc/tasks_bloc.dart';
-import 'package:tasks_frontend/feature/add_task.view.dart';
-import 'package:tasks_frontend/feature/setting_view.dart';
-import 'package:tasks_frontend/feature/style.dart';
-import 'package:tasks_frontend/feature/tasks.model.dart';
-import 'package:tasks_frontend/widget/icon_button_filled.dart';
-import 'package:tasks_frontend/widget/task_tile.dart';
+
+import '../bloc/task_bloc/tasks_bloc.dart';
+import '../models/tasks.model.dart';
+import '../notification_handler.dart';
+import '../style/style.dart';
+import '../widget/icon_button_filled.dart';
+import '../widget/task_tile.dart';
+import 'add_task.view.dart';
+import 'setting_view.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -22,18 +26,15 @@ class HomeState extends State<Home> {
   final focusNode = FocusNode();
 
   String dateFormat() {
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('d MMMM, E').format(now);
+    final now = DateTime.now();
+    final formattedDate = DateFormat('d MMMM, E').format(now);
     return formattedDate;
   }
 
   List getProgress(List<Tasks> tasks) {
-    final done = tasks
-        .where((element) => element.isComplete == true)
-        .toList()
-        .length;
+    final done = tasks.where((element) => element.isComplete).toList().length;
     final total = tasks.length;
-    final String stringFormat = "$done/$total";
+    final stringFormat = '$done/$total';
     final per = ((done / total) * 100).floor();
     return [stringFormat, per];
   }
@@ -57,13 +58,13 @@ class HomeState extends State<Home> {
             child: BlocBuilder<TasksBloc, TasksState>(
               builder: (context, tasksState) {
                 if (tasksState is TasksError) {
-                  return Center(child: Text("Error: ${tasksState.message}"));
+                  return Center(child: Text('Error: ${tasksState.message}'));
                 } else if (tasksState is TasksLoaded) {
                   final completedTasks = tasksState.tasks
-                      .where((task) => task.isComplete == true)
+                      .where((task) => task.isComplete)
                       .toList();
                   final onGoingTasks = tasksState.tasks
-                      .where((task) => task.isComplete == false)
+                      .where((task) => !task.isComplete)
                       .toList();
 
                   if (tasksState.tasks.isEmpty) {
@@ -72,17 +73,17 @@ class HomeState extends State<Home> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         appbarWidget(),
-                        Spacer(),
+                        const Spacer(),
                         Text(
-                          "No tasks to work on right now",
+                          'No tasks to work on right now',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.grey.shade600,
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         addTaskButtonFloating(context),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                       ],
                     );
                   } else {
@@ -94,7 +95,7 @@ class HomeState extends State<Home> {
                         Padding(
                           padding: EdgeInsets.only(top: headerHeight + 75),
                           child: SingleChildScrollView(
-                            physics: BouncingScrollPhysics(),
+                            physics: const BouncingScrollPhysics(),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.max,
@@ -107,77 +108,78 @@ class HomeState extends State<Home> {
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      AppStyle.subheadingTextStyle("Ongoing"),
+                                      AppStyle.subheadingTextStyle('Ongoing'),
                                       Chip(
                                         backgroundColor: Colors.grey.shade300,
-                                        padding: EdgeInsets.all(1),
+                                        padding: const EdgeInsets.all(1),
                                         side: BorderSide.none,
                                         label: Text(
                                           onGoingTasks.length.toString(),
-                                          style: TextStyle(height: 1),
+                                          style: const TextStyle(height: 1),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                onGoingTasks.isNotEmpty
-                                    ? ListView.separated(
-                                        separatorBuilder: (context, index) =>
-                                            Divider(
-                                              endIndent: 10,
-                                              indent: 10,
-                                              color: Colors.grey.shade300,
-                                            ),
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
+                                if (onGoingTasks.isNotEmpty)
+                                  ListView.separated(
+                                    separatorBuilder: (context, index) =>
+                                        Divider(
+                                          endIndent: 10,
+                                          indent: 10,
+                                          color: Colors.grey.shade300,
+                                        ),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
 
-                                        itemCount: onGoingTasks.length,
-                                        itemBuilder: (context, index) {
-                                          return TaskTile(
-                                            task: onGoingTasks[index],
-                                          );
-                                        },
-                                      )
-                                    : Center(
-                                        child: AppStyle.secondaryHeading(
-                                          "All tasks done!",
-                                        ),
-                                      ),
-                                completedTasks.isEmpty
-                                    ? SizedBox()
-                                    : Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 4,
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
+                                    itemCount: onGoingTasks.length,
+                                    itemBuilder: (context, index) {
+                                      return TaskTile(
+                                        task: onGoingTasks[index],
+                                      );
+                                    },
+                                  )
+                                else
+                                  Center(
+                                    child: AppStyle.secondaryHeading(
+                                      'All tasks done!',
+                                    ),
+                                  ),
+                                if (completedTasks.isEmpty)
+                                  const SizedBox()
+                                else
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 4,
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
 
-                                          children: [
-                                            AppStyle.subheadingTextStyle(
-                                              "Completed",
-                                            ),
-                                            Chip(
-                                              backgroundColor:
-                                                  Colors.grey.shade300,
-                                              padding: EdgeInsets.all(1),
-                                              side: BorderSide.none,
-                                              label: Text(
-                                                completedTasks.length
-                                                    .toString(),
-                                                style: TextStyle(height: 1),
-                                              ),
-                                            ),
-                                          ],
+                                      children: [
+                                        AppStyle.subheadingTextStyle(
+                                          'Completed',
                                         ),
-                                      ),
+                                        Chip(
+                                          backgroundColor: Colors.grey.shade300,
+                                          padding: const EdgeInsets.all(1),
+                                          side: BorderSide.none,
+                                          label: Text(
+                                            completedTasks.length.toString(),
+                                            style: const TextStyle(height: 1),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ListView.separated(
                                   separatorBuilder: (context, index) => Divider(
                                     endIndent: 10,
                                     indent: 10,
                                     color: Colors.grey.shade300,
                                   ),
-                                  physics: NeverScrollableScrollPhysics(),
+                                  physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
 
                                   itemCount: completedTasks.length,
@@ -210,7 +212,7 @@ class HomeState extends State<Home> {
                     );
                   }
                 } else {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
               },
             ),
@@ -228,20 +230,20 @@ class HomeState extends State<Home> {
         borderRadius: BorderRadiusGeometry.circular(50),
       ),
       // backgroundColor: const Color.fromARGB(255, 0, 38, 255),
-      label: Text("Add Task", style: TextStyle(color: Colors.white)),
+      label: const Text('Add Task', style: TextStyle(color: Colors.white)),
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => AddTaskView()),
+          MaterialPageRoute(builder: (context) => const AddTaskView()),
         );
       },
-      icon: Icon(Icons.add_rounded),
+      icon: const Icon(Icons.add_rounded),
     );
   }
 
   Padding appbarWidget() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -251,8 +253,8 @@ class HomeState extends State<Home> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                "Good",
+              const Text(
+                'Good',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -262,7 +264,7 @@ class HomeState extends State<Home> {
                 ),
               ),
               Text(
-                "morning",
+                'morning',
                 style: TextStyle(
                   fontSize: 28,
                   height: 1,
@@ -277,32 +279,39 @@ class HomeState extends State<Home> {
             children: [
               IconButtonFilled(
                 onPressed: () async {
-                  await AwesomeNotifications().createNotification(
-                    actionButtons: [
-                      NotificationActionButton(key: '01', label: 'Done'),
-                      NotificationActionButton(key: '02', label: 'Cancel'),
-                    ],
-
-                    content: NotificationContent(
-                      autoDismissible: false,
-                      criticalAlert: true,
-                      locked: true,
-                      title: 'TEST',
-                      id: 02,
-                      channelKey: 'task_channel',
+                  await FlutterLocalNotificationsPlugin().show(
+                    Random().nextInt(100),
+                    'title',
+                    'body',
+                    const NotificationDetails(
+                      android: AndroidNotificationDetails(
+                        'task_channel', // channel id
+                        'Task Notifications',
+                        importance: Importance.high,
+                        enableVibration: true,
+                        autoCancel: false,
+                        category: AndroidNotificationCategory.reminder,
+                        priority: Priority.high,
+                      ),
                     ),
                   );
                 },
-                icon: Icon(Icons.notifications_outlined),
+                icon: const Icon(Icons.notifications_outlined),
               ),
               IconButtonFilled(
-                icon: Icon(Icons.settings_outlined),
+                icon: const Icon(Icons.circle),
+                onPressed: () async {
+                  await NotificationProvider().debugScheduledNotifications();
+                },
+              ),
+              IconButtonFilled(
+                icon: const Icon(Icons.settings_outlined),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return SettingView();
+                        return const SettingView();
                       },
                     ),
                   );
@@ -324,7 +333,7 @@ class HomeState extends State<Home> {
       clipBehavior: Clip.hardEdge,
       width: double.maxFinite,
       height: headerHeight,
-      padding: EdgeInsets.all(14).copyWith(bottom: 16),
+      padding: const EdgeInsets.all(14).copyWith(bottom: 16),
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         // color: Theme.of(context).colorScheme.onSurface,

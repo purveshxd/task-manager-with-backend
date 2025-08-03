@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tasks_frontend/feature/style.dart';
-import 'package:tasks_frontend/feature/tasks.model.dart';
+import 'package:tasks_frontend/style/style.dart';
+import 'package:tasks_frontend/models/tasks.model.dart';
 
 class TaskEditPage extends StatelessWidget {
   final Tasks task;

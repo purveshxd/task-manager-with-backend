@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:tasks_frontend/feature/tasks.model.dart';
 import 'package:tasks_frontend/localstorage/local_storage.dart';
+import 'package:tasks_frontend/models/tasks.model.dart';
 
 part 'tasks_event.dart';
 part 'tasks_state.dart';
@@ -20,11 +20,18 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<UpdateTask>(_onUpdateTask);
   }
 
+  // Future<void> _onLoadTasks(LoadTasks event, Emitter<TasksState> emit) async {
+  //   emit(TasksLoading());
+  // }
+
   Future<void> _onLoadTasks(LoadTasks event, Emitter<TasksState> emit) async {
     emit(TasksLoading());
     try {
       final tasks = await tasksProvider.getTasks();
       emit(TasksLoaded(tasks: tasks));
+      for (var element in tasks) {
+        log(element.toString());
+      }
     } catch (e) {
       log(e.toString());
       emit(TasksError(e.toString()));
@@ -47,22 +54,31 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
   Future<void> _onToggleTask(ToggleTask event, Emitter<TasksState> emit) async {
     if (state is TasksLoaded) {
-      final currentTasks = List<Tasks>.from((state as TasksLoaded).tasks);
+      final currentTasksList = List<Tasks>.from((state as TasksLoaded).tasks);
 
-      final isToggled = await tasksProvider.toggleTask(event.id);
-      log("Toggle-$isToggled");
-      log("Toggle/id-${event.id}");
-      if (isToggled) {
-        final updatedTasks = (state as TasksLoaded).tasks.map((task) {
-          if (task.id == event.id) {
-            return task.copyWith(isComplete: !task.isComplete);
-          }
-          return task;
-        }).toList();
-        emit(TasksLoaded(tasks: updatedTasks));
-      } else {
-        emit(TaskActionMessage(message: "Error: Can't toggle the task"));
-        emit(TasksLoaded(tasks: currentTasks));
+      // Find index of the task to update
+      final task = currentTasksList.firstWhere(
+        (task) => task.id == event.taskID,
+      );
+      final index = currentTasksList.indexOf(task);
+
+      task.isComplete = !task.isComplete;
+
+      if (index != -1) {
+        // replace the task from list
+        currentTasksList[index] = task;
+
+        log("UpdatedTask-${currentTasksList.toString()}");
+        // Optionally call API to persist the update
+        final isUpdated = await tasksProvider.updateTask(task);
+
+        if (isUpdated == true) {
+          emit(TasksLoaded(tasks: currentTasksList));
+        } else {
+          // Show error message and revert state if needed
+          emit(TaskActionMessage(message: "Error: Can't update the task"));
+          emit(TasksLoaded(tasks: currentTasksList)); // Restore old state
+        }
       }
     }
   }

@@ -44,6 +44,7 @@ class AppStyle {
 
   static Color appBackground() {
     return Colors.grey.shade100;
+    // return const Color.fromARGB(255, 20, 20, 20);
   }
 
   static Color primaryColor() {

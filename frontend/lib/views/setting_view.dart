@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tasks_frontend/feature/style.dart';
+import 'package:tasks_frontend/style/style.dart';
 
 class SettingView extends StatelessWidget {
   const SettingView({super.key});
@@ -7,10 +7,8 @@ class SettingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: AppStyle.appBackground(),
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        // backgroundColor: AppStyle.appBackground(),
         title: Text("Settings"),
         backgroundColor: Theme.of(context).colorScheme.surface,
       ),

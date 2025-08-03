@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:tasks_frontend/feature/tasks.model.dart';
+import 'package:tasks_frontend/models/tasks.model.dart';
+import 'package:tasks_frontend/models/taskslog.model.dart';
 
 class LocalStorageRepo {
   static Isar? _isar;
@@ -8,8 +11,16 @@ class LocalStorageRepo {
   static Future<void> init() async {
     if (_isar == null) {
       final dir = await getApplicationDocumentsDirectory();
-      _isar = await Isar.open([TasksSchema], directory: dir.path);
+      _isar = await Isar.open([
+        TasksSchema,
+        TaskLogModelSchema,
+      ], directory: dir.path);
     }
+  }
+
+  //! Watch tasks
+  Stream<List<Tasks>> watchAllTasks() {
+    return _isar!.tasks.where().watch(fireImmediately: true);
   }
 
   Future<List<Tasks>> getTasks() async {
@@ -18,9 +29,11 @@ class LocalStorageRepo {
 
   Future<bool> addTask(Tasks task) async {
     try {
-      await _isar!.writeTxn(() async => await _isar!.tasks.put(task));
+      await _isar!.writeTxn(() async => _isar!.tasks.put(task));
+
       return true;
-    } catch (_) {
+    } catch (e) {
+      log(e.toString());
       return false;
     }
   }
@@ -28,23 +41,32 @@ class LocalStorageRepo {
   Future<bool> updateTask(Tasks task) async {
     try {
       await _isar!.writeTxn(() async => await _isar!.tasks.put(task));
+
       return true;
-    } catch (_) {
+    } catch (e) {
+      log(e.toString());
       return false;
     }
   }
 
   Future<bool> toggleTask(int id) async {
     try {
-      await _isar!.writeTxn(() async {
-        final task = await _isar!.tasks.get(id);
-        if (task != null) {
-          task.isComplete = !task.isComplete;
+      final task = await _isar!.tasks.get(id);
+
+      if (task != null) {
+        task.isComplete = !task.isComplete;
+
+        await _isar!.writeTxn(() async {
           await _isar!.tasks.put(task);
-        }
-      });
-      return true;
-    } catch (_) {
+        });
+
+        return true;
+      } else {
+        log("Task not found with ID: $id");
+        return false;
+      }
+    } catch (e) {
+      log("Toggle Task Error: $e");
       return false;
     }
   }
@@ -52,9 +74,11 @@ class LocalStorageRepo {
   Future<bool> deleteTask(int id) async {
     try {
       await _isar!.writeTxn(() async => await _isar!.tasks.delete(id));
+
       return true;
-    } catch (_) {
-      return false;
+    } catch (e) {
+      log(e.toString());
+      throw Exception(e);
     }
   }
 }

@@ -1,12 +1,27 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tasks_frontend/bloc/tasks_bloc.dart';
-import 'package:tasks_frontend/feature/style.dart';
-import 'package:tasks_frontend/feature/tasks.model.dart';
+import 'package:tasks_frontend/bloc/task_bloc/tasks_bloc.dart';
+import 'package:tasks_frontend/models/tasks.model.dart';
 import 'package:tasks_frontend/notification_handler.dart';
+import 'package:tasks_frontend/style/style.dart';
 import 'package:tasks_frontend/widget/custom_action_chip.dart';
 import 'package:tasks_frontend/widget/icon_button_filled.dart';
+
+class RepeatOptionModel {
+  final RepeatOption option;
+  final bool isSelected;
+
+  RepeatOptionModel({required this.option, required this.isSelected});
+
+  RepeatOptionModel copyWith({RepeatOption? option, bool? isSelected}) {
+    return RepeatOptionModel(
+      option: option ?? this.option,
+      isSelected: isSelected ?? this.isSelected,
+    );
+  }
+}
 
 class AddTaskView extends StatefulWidget {
   const AddTaskView({super.key, this.task});
@@ -22,6 +37,10 @@ class _AddTaskViewState extends State<AddTaskView> {
   TimeOfDay timeOfDay = TimeOfDay.now();
   DateTime dateTime = DateTime.now();
 
+  late List<RepeatOptionModel> repeatOptions;
+  late int repeatIndex;
+  late String repeatName;
+
   final notificationHandler = NotificationProvider();
 
   bool isEdit = false;
@@ -31,8 +50,32 @@ class _AddTaskViewState extends State<AddTaskView> {
   @override
   void initState() {
     super.initState();
+
     isEdit = widget.task != null;
     addNotification = widget.task?.addNotification ?? false;
+
+    final currentRepeat = widget.task?.repeatOption ?? RepeatOption.once;
+    repeatIndex = currentRepeat.index;
+    repeatName = currentRepeat.name;
+
+    repeatOptions = [
+      RepeatOptionModel(
+        option: RepeatOption.once,
+        isSelected: currentRepeat == RepeatOption.once,
+      ),
+      RepeatOptionModel(
+        option: RepeatOption.daily,
+        isSelected: currentRepeat == RepeatOption.daily,
+      ),
+      RepeatOptionModel(
+        option: RepeatOption.weekly,
+        isSelected: currentRepeat == RepeatOption.weekly,
+      ),
+      RepeatOptionModel(
+        option: RepeatOption.monthly,
+        isSelected: currentRepeat == RepeatOption.monthly,
+      ),
+    ];
 
     titleController = TextEditingController(text: widget.task?.name ?? "");
     descController = TextEditingController(text: widget.task?.desc ?? "");
@@ -69,26 +112,32 @@ class _AddTaskViewState extends State<AddTaskView> {
         });
       }
     }
-    if (addNotification) {
-      await notificationHandler.scheduleMinuteNotification(
-        title: titleController.text.trim(),
-        body: descController.text.trim(),
-        scheduledDate: DateTime(
-          dateTime.year,
-          dateTime.month,
-          dateTime.day,
-          timeOfDay.hour,
-          timeOfDay.minute,
-        ),
-      );
-    }
+  }
+
+  void addNotificationButton() async {
+    await notificationHandler.scheduleNotification(
+      repeatType: repeatList[repeatIndex].option.name,
+      id: Random().nextInt(100),
+      title: titleController.text.trim(),
+      body: descController.text.trim(),
+      dateTime: DateTime(
+        dateTime.year,
+        dateTime.month,
+        dateTime.day,
+        timeOfDay.hour,
+        timeOfDay.minute,
+        1,
+      ),
+    );
   }
 
   void onSubmit() {
     if (titleController.text.trim().isNotEmpty) {
+      addNotification ? addNotificationButton() : null;
       context.read<TasksBloc>().add(
         AddTask(
           Tasks(
+            repeatOption: RepeatOption.values[repeatIndex],
             notificationDateTime: addNotification
                 ? DateTime(
                     dateTime.year,
@@ -96,6 +145,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                     dateTime.day,
                     timeOfDay.hour,
                     timeOfDay.minute,
+                    1,
                   )
                 : null,
             addNotification: addNotification,
@@ -117,6 +167,7 @@ class _AddTaskViewState extends State<AddTaskView> {
   void handleSubmit() {
     if (isEdit) {
       Tasks editTask = widget.task!.copyWith(
+        repeatOption: RepeatOption.values[repeatIndex],
         notificationDateTime: addNotification
             ? DateTime(
                 dateTime.year,
@@ -124,53 +175,55 @@ class _AddTaskViewState extends State<AddTaskView> {
                 dateTime.day,
                 timeOfDay.hour,
                 timeOfDay.minute,
+                1,
               )
             : null,
         addNotification: addNotification,
         name: titleController.text.trim(),
         desc: descController.text.trim(),
       );
-
+      addNotification ? addNotificationButton() : null;
       context.read<TasksBloc>().add(UpdateTask(editTask));
     } else {
       onSubmit();
     }
+
     Navigator.pop(context);
   }
 
   // request notification permission
   Future<void> requestPermission() async {
-    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    if (!isAllowed) {
-      await AwesomeNotifications().requestPermissionToSendNotifications();
-    }
+    // bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    // if (!isAllowed) {
+    //   await AwesomeNotifications().requestPermissionToSendNotifications();
+    // }
   }
-
-  List<List> repeatList = [
-    ["Daily", true],
-    ["Weekly", false],
-    ["Monthly", false],
+  List<RepeatOptionModel> repeatList = [
+    RepeatOptionModel(option: RepeatOption.once, isSelected: true),
+    RepeatOptionModel(option: RepeatOption.daily, isSelected: false),
+    RepeatOptionModel(option: RepeatOption.weekly, isSelected: false),
+    RepeatOptionModel(option: RepeatOption.monthly, isSelected: false),
   ];
 
-  void toggleChips(bool value, int index) {
+  void toggleChip(int index) {
     setState(() {
-      List labelbool = repeatList.firstWhere((list) => list[1] == true);
-      labelbool[1] = false;
-      repeatList[index][1] = value;
-      List removedChip = repeatList.removeAt(index);
-      repeatList.insert(0, removedChip);
+      for (int i = 0; i < repeatOptions.length; i++) {
+        repeatOptions[i] = repeatOptions[i].copyWith(isSelected: i == index);
+      }
+      repeatIndex = index;
+      repeatName = repeatOptions[index].option.name;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.grey.shade100,
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: AppStyle.appBackground(),
+
       appBar: AppBar(
         title: Text(isEdit ? "Edit Task" : "Add Task"),
-        // backgroundColor: Colors.grey.shade100,
-        backgroundColor: Theme.of(context).colorScheme.surface,
+
+        backgroundColor: AppStyle.appBackground(),
         actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
           widget.task != null
@@ -377,25 +430,18 @@ class _AddTaskViewState extends State<AddTaskView> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
                           ),
-
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Wrap(
-                                spacing: 6,
-                                // runSpacing: 0,
-                                children: List.generate(
-                                  repeatList.length,
-                                  (index) => CustomActionChip(
-                                    label: repeatList[index][0],
-                                    isSelected: repeatList[index][1],
-                                    onPressed: (value) =>
-                                        toggleChips(value, index),
-                                  ),
-                                ),
-                              ),
-                            ],
+                          child: Wrap(
+                            alignment: WrapAlignment.spaceBetween,
+                            runSpacing: 0,
+                            spacing: 8,
+                            children: List.generate(repeatList.length, (index) {
+                              final option = repeatOptions[index];
+                              return CustomActionChip(
+                                label: option.option.name,
+                                isSelected: option.isSelected,
+                                onPressed: (value) => toggleChip(index),
+                              );
+                            }),
                           ),
                         ),
                       ],
