@@ -24,6 +24,11 @@ class NotificationProvider {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
+  // cancel notification
+  void cancelNotification(int hashcode) async {
+    await flutterLocalNotificationsPlugin.cancel(hashcode);
+  }
+
   // ✅ Base Notification Details
   NotificationDetails _notificationDetails() {
     return const NotificationDetails(

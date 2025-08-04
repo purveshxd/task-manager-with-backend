@@ -52,8 +52,29 @@ class _AddTaskViewState extends State<AddTaskView> {
     super.initState();
 
     isEdit = widget.task != null;
+
+    // Initialize controllers
+    titleController = TextEditingController(text: widget.task?.name ?? "");
+    descController = TextEditingController(text: widget.task?.desc ?? "");
+
+    // Initialize notification settings
     addNotification = widget.task?.addNotification ?? false;
 
+    // Initialize date and time from existing task if editing
+    if (isEdit && widget.task!.notificationDateTime != null) {
+      final notifDateTime = widget.task!.notificationDateTime!;
+      dateTime = DateTime(
+        notifDateTime.year,
+        notifDateTime.month,
+        notifDateTime.day,
+      );
+      timeOfDay = TimeOfDay(
+        hour: notifDateTime.hour,
+        minute: notifDateTime.minute,
+      );
+    }
+
+    // Initialize repeat options
     final currentRepeat = widget.task?.repeatOption ?? RepeatOption.once;
     repeatIndex = currentRepeat.index;
     repeatName = currentRepeat.name;
@@ -76,15 +97,23 @@ class _AddTaskViewState extends State<AddTaskView> {
         isSelected: currentRepeat == RepeatOption.monthly,
       ),
     ];
+  }
 
-    titleController = TextEditingController(text: widget.task?.name ?? "");
-    descController = TextEditingController(text: widget.task?.desc ?? "");
+  // Helper method to get the current notification DateTime
+  DateTime get currentNotificationTime {
+    return DateTime(
+      dateTime.year,
+      dateTime.month,
+      dateTime.day,
+      timeOfDay.hour, // Use timeOfDay.hour instead of hourOfPeriod
+      timeOfDay.minute,
+    );
   }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? timer = await showDatePicker(
       confirmText: "Set Time",
-      currentDate: DateTime.now(),
+      currentDate: dateTime,
       context: context,
       firstDate: DateTime.now().subtract(Duration(days: 1)),
       lastDate: DateTime.now().add(Duration(days: 10000)),
@@ -114,39 +143,28 @@ class _AddTaskViewState extends State<AddTaskView> {
     }
   }
 
-  void addNotificationButton() async {
+  Future<void> addNotificationButton() async {
     await notificationHandler.scheduleNotification(
-      repeatType: repeatList[repeatIndex].option.name,
-      id: Random().nextInt(100),
+      repeatType: repeatOptions[repeatIndex].option.name,
+      id: isEdit ? widget.task!.id.hashCode : Random().nextInt(100),
       title: titleController.text.trim(),
       body: descController.text.trim(),
-      dateTime: DateTime(
-        dateTime.year,
-        dateTime.month,
-        dateTime.day,
-        timeOfDay.hour,
-        timeOfDay.minute,
-        1,
-      ),
+      dateTime: currentNotificationTime,
     );
   }
 
   void onSubmit() {
     if (titleController.text.trim().isNotEmpty) {
-      addNotification ? addNotificationButton() : null;
+      if (addNotification) {
+        addNotificationButton();
+      }
+
       context.read<TasksBloc>().add(
         AddTask(
           Tasks(
             repeatOption: RepeatOption.values[repeatIndex],
             notificationDateTime: addNotification
-                ? DateTime(
-                    dateTime.year,
-                    dateTime.month,
-                    dateTime.day,
-                    timeOfDay.hour,
-                    timeOfDay.minute,
-                    1,
-                  )
+                ? currentNotificationTime
                 : null,
             addNotification: addNotification,
             name: titleController.text.trim(),
@@ -164,25 +182,32 @@ class _AddTaskViewState extends State<AddTaskView> {
     }
   }
 
-  void handleSubmit() {
+  Future<void> handleSubmit() async {
     if (isEdit) {
-      Tasks editTask = widget.task!.copyWith(
-        repeatOption: RepeatOption.values[repeatIndex],
-        notificationDateTime: addNotification
-            ? DateTime(
-                dateTime.year,
-                dateTime.month,
-                dateTime.day,
-                timeOfDay.hour,
-                timeOfDay.minute,
-                1,
-              )
-            : null,
-        addNotification: addNotification,
+      // Cancel existing notification if it exists
+      if (widget.task!.addNotification) {
+        notificationHandler.cancelNotification(widget.task!.id.hashCode);
+      }
+
+      // Create updated task - need to handle notificationDateTime properly
+      // because copyWith doesn't handle null values correctly
+      Tasks editTask = Tasks(
         name: titleController.text.trim(),
+        isComplete: widget.task!.isComplete,
         desc: descController.text.trim(),
+        addNotification: addNotification,
+        notificationDateTime: addNotification ? currentNotificationTime : null,
+        repeatOption: RepeatOption.values[repeatIndex],
       );
-      addNotification ? addNotificationButton() : null;
+      // Preserve the original ID
+      editTask.id = widget.task!.id;
+
+      // Schedule new notification if needed
+      if (addNotification) {
+        await addNotificationButton();
+      }
+
+      // Update the task in bloc
       context.read<TasksBloc>().add(UpdateTask(editTask));
     } else {
       onSubmit();
@@ -198,12 +223,6 @@ class _AddTaskViewState extends State<AddTaskView> {
     //   await AwesomeNotifications().requestPermissionToSendNotifications();
     // }
   }
-  List<RepeatOptionModel> repeatList = [
-    RepeatOptionModel(option: RepeatOption.once, isSelected: true),
-    RepeatOptionModel(option: RepeatOption.daily, isSelected: false),
-    RepeatOptionModel(option: RepeatOption.weekly, isSelected: false),
-    RepeatOptionModel(option: RepeatOption.monthly, isSelected: false),
-  ];
 
   void toggleChip(int index) {
     setState(() {
@@ -219,10 +238,8 @@ class _AddTaskViewState extends State<AddTaskView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppStyle.appBackground(),
-
       appBar: AppBar(
         title: Text(isEdit ? "Edit Task" : "Add Task"),
-
         backgroundColor: AppStyle.appBackground(),
         actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
@@ -247,7 +264,6 @@ class _AddTaskViewState extends State<AddTaskView> {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 spacing: 10,
-
                 children: [
                   Row(
                     children: [
@@ -284,7 +300,6 @@ class _AddTaskViewState extends State<AddTaskView> {
                       ),
                     ],
                   ),
-
                   TextField(
                     textInputAction: TextInputAction.done,
                     controller: descController,
@@ -373,7 +388,6 @@ class _AddTaskViewState extends State<AddTaskView> {
                                       ),
                                     ),
                                     backgroundColor: Colors.grey.shade200,
-
                                     side: BorderSide.none,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
@@ -382,7 +396,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                                   ActionChip(
                                     onPressed: () => _selectTime(context),
                                     label: Text(
-                                      "${timeOfDay.hourOfPeriod}:${timeOfDay.minute} ${timeOfDay.period.name.toUpperCase()}",
+                                      "${timeOfDay.hourOfPeriod}:${timeOfDay.minute.toString().padLeft(2, '0')} ${timeOfDay.period.name.toUpperCase()}",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         color: addNotification
@@ -434,7 +448,9 @@ class _AddTaskViewState extends State<AddTaskView> {
                             alignment: WrapAlignment.spaceBetween,
                             runSpacing: 0,
                             spacing: 8,
-                            children: List.generate(repeatList.length, (index) {
+                            children: List.generate(repeatOptions.length, (
+                              index,
+                            ) {
                               final option = repeatOptions[index];
                               return CustomActionChip(
                                 label: option.option.name,
@@ -449,7 +465,6 @@ class _AddTaskViewState extends State<AddTaskView> {
                   ),
                 ],
               ),
-
               // ! Bottom Buttons -------------------
               Spacer(),
               Row(
