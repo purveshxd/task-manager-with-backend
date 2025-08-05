@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tasks_frontend/bloc/task_bloc/tasks_bloc.dart';
 import 'package:tasks_frontend/models/tasks.model.dart';
 import 'package:tasks_frontend/notification_handler.dart';
@@ -208,20 +209,22 @@ class _AddTaskViewState extends State<AddTaskView> {
       }
 
       // Update the task in bloc
-      context.read<TasksBloc>().add(UpdateTask(editTask));
+      mounted ? context.read<TasksBloc>().add(UpdateTask(editTask)) : null;
     } else {
       onSubmit();
     }
 
-    Navigator.pop(context);
+    mounted ? Navigator.pop(context) : null;
   }
 
   // request notification permission
   Future<void> requestPermission() async {
-    // bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    // if (!isAllowed) {
-    //   await AwesomeNotifications().requestPermissionToSendNotifications();
-    // }
+    final permission = await Permission.notification.status;
+
+    final isGranted = permission.isGranted;
+    if (!isGranted) {
+      await Permission.notification.request();
+    }
   }
 
   void toggleChip(int index) {
@@ -484,7 +487,8 @@ class _AddTaskViewState extends State<AddTaskView> {
                   Expanded(
                     child: FilledButton.tonalIcon(
                       style: FilledButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 0, 38, 255),
+                        // backgroundColor: const Color.fromARGB(255, 0, 38, 255),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                       ),
                       icon: const Icon(Icons.check_circle_rounded),

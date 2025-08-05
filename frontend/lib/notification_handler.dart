@@ -22,11 +22,19 @@ class NotificationProvider {
         );
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    final india = tz.getLocation('Asia/Kolkata');
+    tz.setLocalLocation(india);
   }
 
   // cancel notification
   void cancelNotification(int hashcode) async {
     await flutterLocalNotificationsPlugin.cancel(hashcode);
+  }
+
+
+  // cancel all notification
+  void cancelAllNotification() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
   }
 
   // ✅ Base Notification Details
@@ -39,7 +47,6 @@ class NotificationProvider {
         importance: Importance.high,
         priority: Priority.high,
         category: AndroidNotificationCategory.reminder,
-
         playSound: true,
       ),
       iOS: DarwinNotificationDetails(),
