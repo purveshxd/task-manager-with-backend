@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 
 import '../bloc/task_bloc/tasks_bloc.dart';
@@ -277,26 +280,22 @@ class HomeState extends State<Home> {
               IconButtonFilled(
                 onPressed: () async {
                   // temp notification
-
-                  // await FlutterLocalNotificationsPlugin().show(
-                  //   Random().nextInt(100),
-                  //   'title',
-                  //   'body',
-                  //   const NotificationDetails(
-                  //     android: AndroidNotificationDetails(
-                  //       'task_channel', // channel id
-                  //       'Task Notifications',
-                  //       importance: Importance.high,
-                  //       enableVibration: true,
-                  //       autoCancel: false,
-                  //       category: AndroidNotificationCategory.reminder,
-                  //       priority: Priority.high,
-                  //     ),
-                  //   ),
-                  // );
-
-                  // Cancel Notification
-                  NotificationProvider().cancelAllNotification();
+                  await FlutterLocalNotificationsPlugin().show(
+                    Random().nextInt(100),
+                    'title',
+                    'body',
+                    const NotificationDetails(
+                      android: AndroidNotificationDetails(
+                        'task_channel', // channel id
+                        'Task Notifications',
+                        importance: Importance.high,
+                        enableVibration: true,
+                        autoCancel: false,
+                        category: AndroidNotificationCategory.reminder,
+                        priority: Priority.high,
+                      ),
+                    ),
+                  );
                 },
                 icon: const Icon(Icons.notifications_outlined),
               ),

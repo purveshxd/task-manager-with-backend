@@ -1,6 +1,10 @@
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -8,33 +12,80 @@ class NotificationProvider {
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+  // Initialize plugin and request permission
   static Future<void> init() async {
-    // Initialize time zones for scheduling
     tz.initializeTimeZones();
+    final india = tz.getLocation('Asia/Kolkata');
+    tz.setLocalLocation(india);
 
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
+
     const InitializationSettings initializationSettings =
         InitializationSettings(
           android: initializationSettingsAndroid,
-          iOS: DarwinInitializationSettings(),
+          iOS: initializationSettingsIOS,
         );
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-    final india = tz.getLocation('Asia/Kolkata');
-    tz.setLocalLocation(india);
+    log('✅ Notifications initialized');
+
+    // Request permission explicitly
+    await requestPermission();
   }
 
-  // cancel notification
-  void cancelNotification(int hashcode) async {
-    await flutterLocalNotificationsPlugin.cancel(hashcode);
+  // Request notification permission using permission_handler
+  static Future<void> requestPermission() async {
+  // ✅ Request Notification Permission
+  final permission = await Permission.notification.status;
+  if (!permission.isGranted) {
+    final result = await Permission.notification.request();
+    log('Notification permission requested, result: $result');
+  } else {
+    log('Notification permission already granted');
   }
 
+  // ✅ Handle Battery Optimization for Android
+  if (Platform.isAndroid) {
+    final ignoreBatteryOptimizations = await Permission.ignoreBatteryOptimizations.isGranted;
 
-  // cancel all notification
-  void cancelAllNotification() async {
+    if (!ignoreBatteryOptimizations) {
+      // Request the permission
+      final result = await Permission.ignoreBatteryOptimizations.request();
+      log('Battery optimization ignore requested: $result');
+
+      // If still not granted, open battery optimization settings
+      if (!result.isGranted) {
+        final intent = AndroidIntent(
+          action: 'android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS',
+          flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+        );
+        await intent.launch();
+        log('Opened battery optimization settings');
+      }
+    } else {
+      log('Battery optimization already disabled for this app');
+    }
+  }
+}
+
+  // ✅ Cancel single notification
+  Future<void> cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
+    log('Cancelled notification with ID: $id');
+  }
+
+  // ✅ Cancel all notifications
+  Future<void> cancelAllNotification() async {
     await flutterLocalNotificationsPlugin.cancelAll();
+    log('Cancelled all notifications');
   }
 
   // ✅ Base Notification Details
@@ -67,10 +118,9 @@ class NotificationProvider {
       body,
       tzDateTime,
       _notificationDetails(),
-
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
-    log('Scheduled one-time notification at $tzDateTime');
+    log('✅ Scheduled one-time notification at $tzDateTime');
   }
 
   // ✅ Daily Notification
@@ -93,7 +143,7 @@ class NotificationProvider {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
     );
-    log('Scheduled daily notification at $nextTime');
+    log('✅ Scheduled daily notification at $nextTime');
   }
 
   // ✅ Weekly Notification
@@ -117,10 +167,10 @@ class NotificationProvider {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
     );
-    log('Scheduled weekly notification at $nextTime');
+    log('✅ Scheduled weekly notification at $nextTime');
   }
 
-  // ✅ Monthly Notification (Approach: Match day & time)
+  // ✅ Monthly Notification
   Future<void> scheduleMonthlyNotification({
     required String title,
     required String body,
@@ -141,7 +191,7 @@ class NotificationProvider {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime,
     );
-    log('Scheduled monthly notification at $nextTime');
+    log('✅ Scheduled monthly notification at $nextTime');
   }
 
   // ✅ Dynamic schedule based on repeat type
@@ -182,7 +232,7 @@ class NotificationProvider {
         );
         break;
       default:
-        log('Unknown repeat type: $repeatType');
+        log('❌ Unknown repeat type: $repeatType');
     }
   }
 
@@ -250,11 +300,11 @@ class NotificationProvider {
     final pending = await flutterLocalNotificationsPlugin
         .pendingNotificationRequests();
     if (pending.isEmpty) {
-      log('No notifications scheduled.');
+      log('ℹ No notifications scheduled.');
     } else {
       for (var n in pending) {
         log(
-          'Pending Notification -> ID: ${n.id}, Title: ${n.title}, Body: ${n.body} ',
+          '🔔 Pending Notification -> ID: ${n.id}, Title: ${n.title}, Body: ${n.body}',
         );
       }
     }

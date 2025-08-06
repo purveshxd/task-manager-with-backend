@@ -336,7 +336,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                               : Colors.grey.shade400,
                         ),
                         onPressed: () async {
-                          await requestPermission();
+                          // await requestPermission();
                           setState(() {
                             addNotification = !addNotification;
                           });
