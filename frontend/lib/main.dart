@@ -21,7 +21,8 @@ void main() async {
 }
 
 /*
-  TODO 1. check how the notification works [is scheduled or does it work when the app is closed]
+  // TODO 1. check how the notification works [is scheduled or does it work when the app is closed]
+  TODO - 
 */
 
 class MyApp extends StatelessWidget {
@@ -34,7 +35,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Poppins',
         useMaterial3: true,
+        brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
+          brightness: Brightness.light,
           seedColor: Color(0xFF0026FF),
           dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
           // dynamicSchemeVariant: DynamicSchemeVariant.monochrome,

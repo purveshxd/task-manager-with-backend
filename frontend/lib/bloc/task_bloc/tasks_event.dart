@@ -4,7 +4,9 @@ part of 'tasks_bloc.dart';
 sealed class TasksEvent {}
 
 // Event: Load all tasks
-class LoadTasks extends TasksEvent {}
+class LoadTasks extends TasksEvent {
+  //
+}
 
 // Event: Add a task
 class AddTask extends TasksEvent {

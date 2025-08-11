@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:tasks_frontend/views/profile_view.dart';
 
 import '../bloc/task_bloc/tasks_bloc.dart';
 import '../models/tasks.model.dart';
@@ -13,7 +14,6 @@ import '../style/style.dart';
 import '../widget/icon_button_filled.dart';
 import '../widget/task_tile.dart';
 import 'add_task.view.dart';
-import 'setting_view.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -306,13 +306,13 @@ class HomeState extends State<Home> {
                 },
               ),
               IconButtonFilled(
-                icon: const Icon(Icons.settings_outlined),
+                icon: const Icon(Icons.person),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return const SettingView();
+                        return const ProfileView();
                       },
                     ),
                   );
