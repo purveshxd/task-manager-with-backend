@@ -43,38 +43,39 @@ class NotificationProvider {
 
   // Request notification permission using permission_handler
   static Future<void> requestPermission() async {
-  // ✅ Request Notification Permission
-  final permission = await Permission.notification.status;
-  if (!permission.isGranted) {
-    final result = await Permission.notification.request();
-    log('Notification permission requested, result: $result');
-  } else {
-    log('Notification permission already granted');
-  }
-
-  // ✅ Handle Battery Optimization for Android
-  if (Platform.isAndroid) {
-    final ignoreBatteryOptimizations = await Permission.ignoreBatteryOptimizations.isGranted;
-
-    if (!ignoreBatteryOptimizations) {
-      // Request the permission
-      final result = await Permission.ignoreBatteryOptimizations.request();
-      log('Battery optimization ignore requested: $result');
-
-      // If still not granted, open battery optimization settings
-      if (!result.isGranted) {
-        final intent = AndroidIntent(
-          action: 'android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS',
-          flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
-        );
-        await intent.launch();
-        log('Opened battery optimization settings');
-      }
+    // ✅ Request Notification Permission
+    final permission = await Permission.notification.status;
+    if (!permission.isGranted) {
+      final result = await Permission.notification.request();
+      log('Notification permission requested, result: $result');
     } else {
-      log('Battery optimization already disabled for this app');
+      log('Notification permission already granted');
+    }
+
+    // ✅ Handle Battery Optimization for Android
+    if (Platform.isAndroid) {
+      final ignoreBatteryOptimizations =
+          await Permission.ignoreBatteryOptimizations.isGranted;
+
+      if (!ignoreBatteryOptimizations) {
+        // Request the permission
+        final result = await Permission.ignoreBatteryOptimizations.request();
+        log('Battery optimization ignore requested: $result');
+
+        // If still not granted, open battery optimization settings
+        if (!result.isGranted) {
+          final intent = AndroidIntent(
+            action: 'android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS',
+            flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+          );
+          await intent.launch();
+          log('Opened battery optimization settings');
+        }
+      } else {
+        log('Battery optimization already disabled for this app');
+      }
     }
   }
-}
 
   // ✅ Cancel single notification
   Future<void> cancelNotification(int id) async {
@@ -299,6 +300,7 @@ class NotificationProvider {
   Future<void> debugScheduledNotifications() async {
     final pending = await flutterLocalNotificationsPlugin
         .pendingNotificationRequests();
+        
     if (pending.isEmpty) {
       log('ℹ No notifications scheduled.');
     } else {

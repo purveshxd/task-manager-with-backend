@@ -242,6 +242,18 @@ class HomeState extends State<Home> {
   }
 
   Padding appbarWidget() {
+    
+    String getGreeting() {
+      var hour = DateTime.now().hour;
+      if (hour < 12) {
+        return 'morning';
+      } else if (hour < 18) {
+        return 'afternoon';
+      } else {
+        return 'evening';
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
@@ -264,7 +276,7 @@ class HomeState extends State<Home> {
                 ),
               ),
               Text(
-                'morning',
+                getGreeting(),
                 style: TextStyle(
                   fontSize: 28,
                   height: 1,

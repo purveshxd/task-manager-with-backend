@@ -125,7 +125,7 @@ class _AddTaskViewState extends State<AddTaskView> {
       });
     }
     if (context.mounted) {
-      await _selectTime(context);
+      await _selectTime(context); 
     }
   }
 
@@ -283,6 +283,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                     textInputAction: TextInputAction.next,
                     controller: titleController,
                     decoration: AppStyle.textFieldDecoration(label: ""),
+
                   ),
                   Row(
                     spacing: 8,
@@ -336,7 +337,6 @@ class _AddTaskViewState extends State<AddTaskView> {
                               : Colors.grey.shade400,
                         ),
                         onPressed: () async {
-                          // await requestPermission();
                           setState(() {
                             addNotification = !addNotification;
                           });
