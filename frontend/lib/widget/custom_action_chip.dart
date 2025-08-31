@@ -6,10 +6,14 @@ class CustomActionChip extends StatelessWidget {
     required this.label,
     this.onPressed,
     required this.isSelected,
+    this.backgroundColor,
+    this.selectedColor,
   });
   final String label;
   final bool isSelected;
   final void Function(bool)? onPressed;
+  final Color? backgroundColor;
+  final Color? selectedColor;
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +35,14 @@ class CustomActionChip extends StatelessWidget {
       visualDensity: VisualDensity.compact,
       selected: isSelected,
       onSelected: onPressed,
-      label: Text(label, style: TextStyle(color: Colors.black)),
+      label: Text(
+        label[0].toUpperCase() + label.substring(1),
+        style: TextStyle(color: Colors.black),
+      ),
       // padding: EdgeInsets.all(0),
       side: BorderSide.none,
-      backgroundColor: Colors.grey.shade200,
-      selectedColor: Colors.grey.shade400,
+      backgroundColor: backgroundColor ?? Colors.grey.shade200,
+      selectedColor: selectedColor ?? Colors.grey.shade400,
       showCheckmark: false,
       // labelPadding: EdgeInsets.symmetric(horizontal: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

@@ -21,8 +21,7 @@ void main() async {
 }
 
 /*
-  // TODO 1. check how the notification works [is scheduled or does it work when the app is closed]
-  TODO - 
+  TODO Add low medium high task priorities 
 */
 
 class MyApp extends StatelessWidget {
@@ -32,10 +31,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.system,
       theme: ThemeData(
         fontFamily: 'Poppins',
         useMaterial3: true,
-        brightness: Brightness.light,
+
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.light,
           seedColor: Color(0xFF0026FF),

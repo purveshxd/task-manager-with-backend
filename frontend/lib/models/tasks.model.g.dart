@@ -47,6 +47,12 @@ const TasksSchema = CollectionSchema(
       name: r'repeatOption',
       type: IsarType.byte,
       enumMap: _TasksrepeatOptionEnumValueMap,
+    ),
+    r'taskPriority': PropertySchema(
+      id: 6,
+      name: r'taskPriority',
+      type: IsarType.byte,
+      enumMap: _TaskstaskPriorityEnumValueMap,
     )
   },
   estimateSize: _tasksEstimateSize,
@@ -86,6 +92,7 @@ void _tasksSerialize(
   writer.writeString(offsets[3], object.name);
   writer.writeDateTime(offsets[4], object.notificationDateTime);
   writer.writeByte(offsets[5], object.repeatOption.index);
+  writer.writeByte(offsets[6], object.taskPriority.index);
 }
 
 Tasks _tasksDeserialize(
@@ -103,6 +110,9 @@ Tasks _tasksDeserialize(
     repeatOption:
         _TasksrepeatOptionValueEnumMap[reader.readByteOrNull(offsets[5])] ??
             RepeatOption.once,
+    taskPriority:
+        _TaskstaskPriorityValueEnumMap[reader.readByteOrNull(offsets[6])] ??
+            TaskPriority.low,
   );
   object.id = id;
   return object;
@@ -128,6 +138,9 @@ P _tasksDeserializeProp<P>(
     case 5:
       return (_TasksrepeatOptionValueEnumMap[reader.readByteOrNull(offset)] ??
           RepeatOption.once) as P;
+    case 6:
+      return (_TaskstaskPriorityValueEnumMap[reader.readByteOrNull(offset)] ??
+          TaskPriority.low) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -144,6 +157,16 @@ const _TasksrepeatOptionValueEnumMap = {
   1: RepeatOption.daily,
   2: RepeatOption.weekly,
   3: RepeatOption.monthly,
+};
+const _TaskstaskPriorityEnumValueMap = {
+  'low': 0,
+  'medium': 1,
+  'high': 2,
+};
+const _TaskstaskPriorityValueEnumMap = {
+  0: TaskPriority.low,
+  1: TaskPriority.medium,
+  2: TaskPriority.high,
 };
 
 Id _tasksGetId(Tasks object) {
@@ -687,6 +710,59 @@ extension TasksQueryFilter on QueryBuilder<Tasks, Tasks, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<Tasks, Tasks, QAfterFilterCondition> taskPriorityEqualTo(
+      TaskPriority value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'taskPriority',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Tasks, Tasks, QAfterFilterCondition> taskPriorityGreaterThan(
+    TaskPriority value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'taskPriority',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Tasks, Tasks, QAfterFilterCondition> taskPriorityLessThan(
+    TaskPriority value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'taskPriority',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Tasks, Tasks, QAfterFilterCondition> taskPriorityBetween(
+    TaskPriority lower,
+    TaskPriority upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'taskPriority',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension TasksQueryObject on QueryBuilder<Tasks, Tasks, QFilterCondition> {}
@@ -763,6 +839,18 @@ extension TasksQuerySortBy on QueryBuilder<Tasks, Tasks, QSortBy> {
   QueryBuilder<Tasks, Tasks, QAfterSortBy> sortByRepeatOptionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'repeatOption', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Tasks, Tasks, QAfterSortBy> sortByTaskPriority() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taskPriority', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Tasks, Tasks, QAfterSortBy> sortByTaskPriorityDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taskPriority', Sort.desc);
     });
   }
 }
@@ -851,6 +939,18 @@ extension TasksQuerySortThenBy on QueryBuilder<Tasks, Tasks, QSortThenBy> {
       return query.addSortBy(r'repeatOption', Sort.desc);
     });
   }
+
+  QueryBuilder<Tasks, Tasks, QAfterSortBy> thenByTaskPriority() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taskPriority', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Tasks, Tasks, QAfterSortBy> thenByTaskPriorityDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'taskPriority', Sort.desc);
+    });
+  }
 }
 
 extension TasksQueryWhereDistinct on QueryBuilder<Tasks, Tasks, QDistinct> {
@@ -889,6 +989,12 @@ extension TasksQueryWhereDistinct on QueryBuilder<Tasks, Tasks, QDistinct> {
   QueryBuilder<Tasks, Tasks, QDistinct> distinctByRepeatOption() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'repeatOption');
+    });
+  }
+
+  QueryBuilder<Tasks, Tasks, QDistinct> distinctByTaskPriority() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'taskPriority');
     });
   }
 }
@@ -934,6 +1040,12 @@ extension TasksQueryProperty on QueryBuilder<Tasks, Tasks, QQueryProperty> {
   QueryBuilder<Tasks, RepeatOption, QQueryOperations> repeatOptionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'repeatOption');
+    });
+  }
+
+  QueryBuilder<Tasks, TaskPriority, QQueryOperations> taskPriorityProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'taskPriority');
     });
   }
 }

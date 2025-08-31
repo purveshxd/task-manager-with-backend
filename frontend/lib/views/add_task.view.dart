@@ -41,6 +41,7 @@ class _AddTaskViewState extends State<AddTaskView> {
   late List<RepeatOptionModel> repeatOptions;
   late int repeatIndex;
   late String repeatName;
+  late TaskPriority taskPriority;
 
   final notificationHandler = NotificationProvider();
 
@@ -48,11 +49,18 @@ class _AddTaskViewState extends State<AddTaskView> {
   bool addNotification = false;
   FocusNode focusNode = FocusNode();
 
+  final List<Color> priorityColorList = [
+    Colors.greenAccent.shade700,
+    Colors.yellowAccent.shade700,
+    Colors.redAccent.shade700,
+  ];
+
   @override
   void initState() {
     super.initState();
 
     isEdit = widget.task != null;
+    taskPriority = widget.task?.taskPriority ?? TaskPriority.low;
 
     // Initialize controllers
     titleController = TextEditingController(text: widget.task?.name ?? "");
@@ -125,7 +133,7 @@ class _AddTaskViewState extends State<AddTaskView> {
       });
     }
     if (context.mounted) {
-      await _selectTime(context); 
+      await _selectTime(context);
     }
   }
 
@@ -173,6 +181,7 @@ class _AddTaskViewState extends State<AddTaskView> {
             desc: descController.text.trim().isEmpty
                 ? ""
                 : descController.text.trim(),
+            taskPriority: taskPriority,
           ),
         ),
       );
@@ -199,6 +208,7 @@ class _AddTaskViewState extends State<AddTaskView> {
         addNotification: addNotification,
         notificationDateTime: addNotification ? currentNotificationTime : null,
         repeatOption: RepeatOption.values[repeatIndex],
+        taskPriority: taskPriority,
       );
       // Preserve the original ID
       editTask.id = widget.task!.id;
@@ -283,7 +293,6 @@ class _AddTaskViewState extends State<AddTaskView> {
                     textInputAction: TextInputAction.next,
                     controller: titleController,
                     decoration: AppStyle.textFieldDecoration(label: ""),
-
                   ),
                   Row(
                     spacing: 8,
@@ -310,6 +319,51 @@ class _AddTaskViewState extends State<AddTaskView> {
                     minLines: null,
                     maxLines: null,
                     decoration: AppStyle.textFieldDecoration(label: ""),
+                  ),
+                  Row(
+                    spacing: 8,
+                    children: [
+                      const Text(
+                        "Priority",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Flexible(
+                        child: Container(
+                          height: 2,
+                          width: double.maxFinite,
+                          color: Colors.grey.shade300,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: List.generate(
+                        TaskPriority.values.length,
+                        (index) => CustomActionChip(
+                          selectedColor: priorityColorList[index],
+                          backgroundColor: priorityColorList[index],
+                          onPressed: (_) {
+                            setState(() {
+                              taskPriority = TaskPriority.values[index];
+                            });
+                          },
+                          label: TaskPriority.values[index].name,
+                          isSelected:
+                              taskPriority == TaskPriority.values[index],
+                        ),
+                      ),
+                    ),
                   ),
                   Row(
                     spacing: 8,
@@ -351,6 +405,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                       ),
                     ],
                   ),
+
                   AnimatedScale(
                     scale: !addNotification ? 0 : 1,
                     duration: Durations.medium4,
@@ -375,7 +430,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                                   Text(
                                     "Date | Time",
                                     style: TextStyle(
-                                      fontWeight: FontWeight.bold,
+                                      // fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Spacer(),

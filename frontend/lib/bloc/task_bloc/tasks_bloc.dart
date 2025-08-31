@@ -20,10 +20,6 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<UpdateTask>(_onUpdateTask);
   }
 
-  // Future<void> _onLoadTasks(LoadTasks event, Emitter<TasksState> emit) async {
-  //   emit(TasksLoading());
-  // }
-
   Future<void> _onLoadTasks(LoadTasks event, Emitter<TasksState> emit) async {
     emit(TasksLoading());
     try {

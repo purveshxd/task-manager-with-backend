@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:tasks_frontend/style/custom_strips.dart';
 import 'package:tasks_frontend/views/profile_view.dart';
 
 import '../bloc/task_bloc/tasks_bloc.dart';
@@ -242,7 +243,6 @@ class HomeState extends State<Home> {
   }
 
   Padding appbarWidget() {
-    
     String getGreeting() {
       var hour = DateTime.now().hour;
       if (hour < 12) {
@@ -409,31 +409,40 @@ class HomeState extends State<Home> {
                   height: 1,
                 ),
               ),
-              Container(
-                width: double.maxFinite,
+              StripedProgressBar(
+                animationDuration: Durations.medium4,
+                progress: getProgress(tasksState.tasks)[1] / 100,
                 height: headerHeight * 0.15,
-
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white),
-                ),
-                child: AnimatedFractionallySizedBox(
-                  duration: Durations.medium4,
-                  curve: Curves.easeOut,
-                  alignment: Alignment.centerLeft,
-
-                  widthFactor: getProgress(tasksState.tasks)[1] / 100,
-                  child: FractionallySizedBox(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade900,
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                    ),
-                  ),
-                ),
+                stripeColor: Colors.white,
+                progressColor: Theme.of(context).colorScheme.primaryContainer,
+                backgroundColor: Colors.white,
+                borderRadius: BorderRadius.circular(8),
               ),
+              // Container(
+              //   width: double.maxFinite,
+              //   height: headerHeight * 0.15,
+
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(8),
+              //     border: Border.all(color: Colors.white),
+              //   ),
+              //   child: AnimatedFractionallySizedBox(
+              //     duration: Durations.medium4,
+              //     curve: Curves.easeOut,
+              //     alignment: Alignment.centerLeft,
+
+              //     widthFactor: getProgress(tasksState.tasks)[1] / 100,
+              //     child: FractionallySizedBox(
+              //       child: Container(
+              //         decoration: BoxDecoration(
+              //           color: Colors.grey.shade900,
+              //           borderRadius: BorderRadius.circular(7),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ],

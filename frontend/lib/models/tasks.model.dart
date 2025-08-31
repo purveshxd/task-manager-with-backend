@@ -6,10 +6,14 @@ part 'tasks.model.g.dart';
 
 enum RepeatOption { once, daily, weekly, monthly }
 
+enum TaskPriority { low, medium, high }
+
 @collection
 class Tasks {
   Id id = Isar.autoIncrement;
   late String name;
+  @enumerated
+  late TaskPriority taskPriority;
   late bool isComplete;
   late String desc;
   late bool addNotification;
@@ -19,6 +23,7 @@ class Tasks {
 
   Tasks({
     required this.name,
+    this.taskPriority = TaskPriority.low,
     this.isComplete = false,
     this.desc = '',
     this.addNotification = false,
@@ -28,6 +33,7 @@ class Tasks {
 
   Tasks copyWith({
     Id? id,
+    TaskPriority? taskPriority,
     String? name,
     bool? isComplete,
     String? desc,
@@ -37,6 +43,7 @@ class Tasks {
   }) {
     return Tasks(
       name: name ?? this.name,
+      taskPriority: taskPriority ?? this.taskPriority,
       isComplete: isComplete ?? this.isComplete,
       desc: desc ?? this.desc,
       addNotification: addNotification ?? this.addNotification,
@@ -49,6 +56,7 @@ class Tasks {
     return <String, dynamic>{
       'id': id,
       'name': name,
+      'taskPriority': taskPriority,
       'isComplete': isComplete,
       'desc': desc,
       'addNotification': addNotification,
@@ -61,6 +69,7 @@ class Tasks {
     return Tasks(
       // id: map['id'] as int,
       name: map['name'] as String,
+      taskPriority: map['taskPriority'] as TaskPriority,
       isComplete: map['isComplete'] as bool,
       desc: map['desc'] as String,
       addNotification: map['addNotification'],
@@ -80,6 +89,6 @@ class Tasks {
 
   @override
   String toString() {
-    return 'Task{id: $id, title: $name, desc: $desc, repeatOption: $repeatOption, isCompleted: $isComplete, notificationDateTime: $notificationDateTime}';
+    return 'Task{id: $id, title: $name, desc: $desc, repeatOption: $repeatOption, isCompleted: $isComplete, notificationDateTime: $notificationDateTime, taskPriority: $taskPriority}';
   }
 }
