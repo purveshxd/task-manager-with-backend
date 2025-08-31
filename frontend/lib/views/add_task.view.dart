@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' hide log;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,6 +47,7 @@ class _AddTaskViewState extends State<AddTaskView> {
 
   bool isEdit = false;
   bool addNotification = false;
+
   FocusNode focusNode = FocusNode();
 
   final List<Color> priorityColorList = [
@@ -339,32 +340,76 @@ class _AddTaskViewState extends State<AddTaskView> {
                       ),
                     ],
                   ),
-
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: List.generate(
+                  Flexible(
+                    child: SegmentedButton<int>(
+                      onSelectionChanged: (Set<int> newSelection) {
+                        setState(() {
+                          taskPriority =
+                              TaskPriority.values[newSelection.first];
+                        });
+                      },
+                      segments: List.generate(
                         TaskPriority.values.length,
-                        (index) => CustomActionChip(
-                          selectedColor: priorityColorList[index],
-                          backgroundColor: priorityColorList[index],
-                          onPressed: (_) {
-                            setState(() {
-                              taskPriority = TaskPriority.values[index];
-                            });
-                          },
-                          label: TaskPriority.values[index].name,
-                          isSelected:
-                              taskPriority == TaskPriority.values[index],
+                        (index) => ButtonSegment(
+                          value: index,
+                          label: Text(
+                            TaskPriority.values[index].name[0].toUpperCase() +
+                                TaskPriority.values[index].name.substring(1),
+                          ),
+                        ),
+                      ),
+                      selected: {TaskPriority.values.indexOf(taskPriority)},
+                      showSelectedIcon: false,
+                      emptySelectionAllowed: false,
+                      expandedInsets: EdgeInsets.all(0),
+                      multiSelectionEnabled: false,
+                      style: SegmentedButton.styleFrom(
+                        foregroundColor: Colors.black,
+                        selectedForegroundColor: Colors.black,
+                        animationDuration: Durations.medium4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(10),
+                        ),
+                        side: BorderSide.none,
+                        backgroundColor: Colors.white,
+                        selectedBackgroundColor: Colors.grey.shade400,
+                      ),
+                    ),
+                  ),
+
+                  /*
+                  ToggleButtons(
+                    renderBorder: false,
+                    borderRadius: BorderRadius.circular(12),
+
+                    onPressed: (index) {
+                      setState(() {
+                        taskPriority = TaskPriority.values[index];
+                      });
+                    },
+                    isSelected: List.generate(TaskPriority.values.length, (
+                      index,
+                    ) {
+                      var val = taskPriority == TaskPriority.values[index];
+                      log(val.toString());
+                      return val ? true : false;
+                    }),
+
+                    children: List.generate(
+                      TaskPriority.values.length,
+                      (index) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 0,
+                        ),
+                        child: Text(
+                          TaskPriority.values[index].name[0].toUpperCase() +
+                              TaskPriority.values[index].name.substring(1),
                         ),
                       ),
                     ),
                   ),
+                  */
                   Row(
                     spacing: 8,
                     children: [

@@ -21,7 +21,8 @@ void main() async {
 }
 
 /*
-  TODO Add low medium high task priorities 
+  TODO - Add low medium high task priorities
+  TODO - 
 */
 
 class MyApp extends StatelessWidget {

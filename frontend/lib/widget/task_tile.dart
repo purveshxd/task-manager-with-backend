@@ -14,6 +14,17 @@ class TaskTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color givePriorityColor() {
+      switch (task.taskPriority) {
+        case TaskPriority.low:
+          return Colors.green.shade200;
+        case TaskPriority.medium:
+          return Colors.amber.shade200;
+        case TaskPriority.high:
+          return Colors.red.shade200;
+      }
+    }
+
     return BlocBuilder<TasksBloc, TasksState>(
       builder: (context, state) {
         // notification timer
@@ -48,13 +59,42 @@ class TaskTile extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        task.name[0].toUpperCase() + task.name.substring(1),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        spacing: 4,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            task.name[0].toUpperCase() + task.name.substring(1),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          RotatedBox(
+                            quarterTurns: 3,
+                            child: Icon(
+                              Icons.bookmark_rounded,
+
+                              color: givePriorityColor(),
+                            ),
+                          ),
+                          // Chip(
+                          //   label: Text(
+                          //     task.taskPriority.name[0].toUpperCase() +
+                          //         task.taskPriority.name.substring(1),
+                          //     style: TextStyle(height: 0, fontSize: 10),
+                          //   ),
+                          //   visualDensity: VisualDensity.compact,
+                          //   padding: EdgeInsets.all(0),
+                          //   side: BorderSide.none,
+                          //   backgroundColor: givePriorityColor(),
+                          //   shape: RoundedRectangleBorder(
+                          //     borderRadius: BorderRadiusGeometry.circular(6),
+                          //   ),
+                          // ),
+                        ],
                       ),
 
                       if (task.desc.isNotEmpty)

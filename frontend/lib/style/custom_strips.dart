@@ -156,7 +156,7 @@ class StripedProgressPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final progressWidth = size.width * progress;
 
-    // Draw the progress background
+    //! Draw the progress background
     final progressPaint = Paint()
       ..color = progressColor
       ..style = PaintingStyle.fill;
@@ -166,7 +166,7 @@ class StripedProgressPainter extends CustomPainter {
       progressPaint,
     );
 
-    // Draw the animated stripes
+    //! Draw the animated stripes
     if (progressWidth > 0) {
       final stripePaint = Paint()
         ..color = stripeColor
@@ -175,7 +175,7 @@ class StripedProgressPainter extends CustomPainter {
       final stripeSpacing = stripeWidth * 2;
       final animationOffset = animationValue * stripeSpacing;
 
-      // Create clipping region for progress area
+      //! Create clipping region for progress area
       canvas.save();
       canvas.clipRect(Rect.fromLTWH(0, 0, progressWidth, size.height));
 
@@ -205,7 +205,7 @@ class StripedProgressPainter extends CustomPainter {
   }
 }
 
-// Alternative simpler implementation using LinearProgressIndicator
+//! Alternative simpler implementation using LinearProgressIndicator
 class SimpleStripedProgressBar extends StatelessWidget {
   final double progress;
   final double height;
@@ -240,7 +240,7 @@ class SimpleStripedProgressBar extends StatelessWidget {
   }
 }
 
-// Usage example with animated progress
+//! Usage example with animated progress
 class ProgressExample extends StatefulWidget {
   const ProgressExample({super.key});
 
@@ -280,13 +280,13 @@ class _ProgressExampleState extends State<ProgressExample> {
           decoration: BoxDecoration(
             color: const Color(0xFF111827),
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.black.withOpacity(0.3),
+            //     blurRadius: 20,
+            //     offset: const Offset(0, 8),
+            //   ),
+            // ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -325,7 +325,7 @@ class _ProgressExampleState extends State<ProgressExample> {
               ),
               const SizedBox(height: 16),
 
-              // Progress percentage
+              //! Progress percentage
               Text(
                 "${(_progress * 100).toInt()}%",
                 style: const TextStyle(
@@ -337,7 +337,7 @@ class _ProgressExampleState extends State<ProgressExample> {
               ),
               const SizedBox(height: 20),
 
-              // Animated striped progress bar
+              //! Animated striped progress bar
               StripedProgressBar(
                 progress: _progress,
                 height: 8,
@@ -348,7 +348,7 @@ class _ProgressExampleState extends State<ProgressExample> {
               ),
               const SizedBox(height: 32),
 
-              // Action buttons
+              //! Action buttons
               Row(
                 children: [
                   Expanded(
@@ -390,7 +390,7 @@ class _ProgressExampleState extends State<ProgressExample> {
               ),
               const SizedBox(height: 20),
 
-              // Demo with different animation speeds
+              //! Demo with different animation speeds
               const Text(
                 "Different animation speeds:",
                 style: TextStyle(
