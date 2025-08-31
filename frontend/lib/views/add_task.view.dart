@@ -352,6 +352,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                         TaskPriority.values.length,
                         (index) => ButtonSegment(
                           value: index,
+
                           label: Text(
                             TaskPriority.values[index].name[0].toUpperCase() +
                                 TaskPriority.values[index].name.substring(1),
@@ -377,39 +378,6 @@ class _AddTaskViewState extends State<AddTaskView> {
                     ),
                   ),
 
-                  /*
-                  ToggleButtons(
-                    renderBorder: false,
-                    borderRadius: BorderRadius.circular(12),
-
-                    onPressed: (index) {
-                      setState(() {
-                        taskPriority = TaskPriority.values[index];
-                      });
-                    },
-                    isSelected: List.generate(TaskPriority.values.length, (
-                      index,
-                    ) {
-                      var val = taskPriority == TaskPriority.values[index];
-                      log(val.toString());
-                      return val ? true : false;
-                    }),
-
-                    children: List.generate(
-                      TaskPriority.values.length,
-                      (index) => Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 0,
-                        ),
-                        child: Text(
-                          TaskPriority.values[index].name[0].toUpperCase() +
-                              TaskPriority.values[index].name.substring(1),
-                        ),
-                      ),
-                    ),
-                  ),
-                  */
                   Row(
                     spacing: 8,
                     children: [
@@ -537,6 +505,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                             ),
                           ],
                         ),
+
                         Container(
                           width: double.maxFinite,
                           padding: EdgeInsets.symmetric(

@@ -17,11 +17,11 @@ class TaskTile extends StatelessWidget {
     Color givePriorityColor() {
       switch (task.taskPriority) {
         case TaskPriority.low:
-          return Colors.green.shade200;
+          return Colors.lightGreen.shade400;
         case TaskPriority.medium:
-          return Colors.amber.shade200;
+          return Colors.amberAccent.shade200;
         case TaskPriority.high:
-          return Colors.red.shade200;
+          return Colors.redAccent.shade200;
       }
     }
 
