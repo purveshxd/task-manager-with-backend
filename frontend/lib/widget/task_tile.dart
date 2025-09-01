@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tasks_frontend/style/custom_style.dart';
 
 import '../bloc/task_bloc/tasks_bloc.dart';
 import '../models/tasks.model.dart';
@@ -14,17 +15,6 @@ class TaskTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color givePriorityColor() {
-      switch (task.taskPriority) {
-        case TaskPriority.low:
-          return Colors.lightGreen.shade400;
-        case TaskPriority.medium:
-          return Colors.amberAccent.shade200;
-        case TaskPriority.high:
-          return Colors.redAccent.shade200;
-      }
-    }
-
     return BlocBuilder<TasksBloc, TasksState>(
       builder: (context, state) {
         // notification timer
@@ -76,8 +66,9 @@ class TaskTile extends StatelessWidget {
                             quarterTurns: 3,
                             child: Icon(
                               Icons.bookmark_rounded,
-
-                              color: givePriorityColor(),
+                              color: AppStyle.givePriorityColor(
+                                task.taskPriority,
+                              ),
                             ),
                           ),
                           // Chip(

@@ -11,19 +11,19 @@ import 'package:tasks_frontend/views/profile_view.dart';
 import '../bloc/task_bloc/tasks_bloc.dart';
 import '../models/tasks.model.dart';
 import '../notification_handler.dart';
-import '../style/style.dart';
+import '../style/custom_style.dart';
 import '../widget/icon_button_filled.dart';
 import '../widget/task_tile.dart';
 import 'add_task.view.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class Homepage extends StatefulWidget {
+  const Homepage({super.key});
 
   @override
-  State<Home> createState() => HomeState();
+  State<Homepage> createState() => HomepageState();
 }
 
-class HomeState extends State<Home> {
+class HomepageState extends State<Homepage> {
   final focusNode = FocusNode();
 
   String dateFormat() {
@@ -246,11 +246,11 @@ class HomeState extends State<Home> {
     String getGreeting() {
       var hour = DateTime.now().hour;
       if (hour < 12) {
-        return 'morning';
+        return 'Morning';
       } else if (hour < 18) {
-        return 'afternoon';
+        return 'Afternoon';
       } else {
-        return 'evening';
+        return 'Evening';
       }
     }
 

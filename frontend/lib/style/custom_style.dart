@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tasks_frontend/models/tasks.model.dart';
 
 class AppStyle {
   static Text subheadingTextStyle(String text) {
@@ -49,5 +50,19 @@ class AppStyle {
 
   static Color primaryColor() {
     return Color.fromARGB(255, 230, 235, 255);
+  }
+
+  static Color givePriorityColor(TaskPriority? taskPriority) {
+    final priority = taskPriority ?? TaskPriority.low;
+    switch (priority) {
+      case TaskPriority.low:
+        return Colors.lightGreen.shade400;
+      case TaskPriority.medium:
+        return Colors.amberAccent.shade200;
+      case TaskPriority.high:
+        return Colors.redAccent.shade200;
+      // default:
+      //   return Colors.lightGreen.shade400;
+    }
   }
 }

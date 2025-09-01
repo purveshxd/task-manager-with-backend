@@ -6,7 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:tasks_frontend/bloc/task_bloc/tasks_bloc.dart';
 import 'package:tasks_frontend/models/tasks.model.dart';
 import 'package:tasks_frontend/notification_handler.dart';
-import 'package:tasks_frontend/style/style.dart';
+import 'package:tasks_frontend/style/custom_style.dart';
 import 'package:tasks_frontend/widget/custom_action_chip.dart';
 import 'package:tasks_frontend/widget/icon_button_filled.dart';
 
@@ -252,6 +252,7 @@ class _AddTaskViewState extends State<AddTaskView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppStyle.appBackground(),
+
       appBar: AppBar(
         title: Text(isEdit ? "Edit Task" : "Add Task"),
         backgroundColor: AppStyle.appBackground(),
@@ -271,9 +272,9 @@ class _AddTaskViewState extends State<AddTaskView> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0).copyWith(bottom: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: ListView(
+            // mainAxisSize: MainAxisSize.min,
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
@@ -352,7 +353,15 @@ class _AddTaskViewState extends State<AddTaskView> {
                         TaskPriority.values.length,
                         (index) => ButtonSegment(
                           value: index,
-
+                          icon: RotatedBox(
+                            quarterTurns: 3,
+                            child: Icon(
+                              Icons.bookmark_rounded,
+                              color: AppStyle.givePriorityColor(
+                                TaskPriority.values[index],
+                              ),
+                            ),
+                          ),
                           label: Text(
                             TaskPriority.values[index].name[0].toUpperCase() +
                                 TaskPriority.values[index].name.substring(1),
@@ -537,39 +546,21 @@ class _AddTaskViewState extends State<AddTaskView> {
                   ),
                 ],
               ),
-              // ! Bottom Buttons -------------------
-              Spacer(),
-              Row(
-                spacing: 16,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                      ),
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text("Cancel"),
-                    ),
-                  ),
-                  Expanded(
-                    child: FilledButton.tonalIcon(
-                      style: FilledButton.styleFrom(
-                        // backgroundColor: const Color.fromARGB(255, 0, 38, 255),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Colors.white,
-                      ),
-                      icon: const Icon(Icons.check_circle_rounded),
-                      onPressed: handleSubmit,
-                      label: Text(isEdit ? "Update" : "Add"),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
+      ),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterDocked,
+
+      floatingActionButton: FilledButton.tonalIcon(
+        style: FilledButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Colors.white,
+        ),
+        icon: const Icon(Icons.check_circle_rounded),
+        onPressed: handleSubmit,
+        label: Text(isEdit ? "Update" : "Add"),
       ),
     );
   }

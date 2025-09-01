@@ -41,10 +41,10 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
           seedColor: Color(0xFF0026FF),
           dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-          // dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
         ),
       ),
-      home: Home(),
+      home: Homepage(),
     );
   }
 }
+ 
