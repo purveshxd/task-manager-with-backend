@@ -5,12 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:tasks_frontend/bloc/app_cubit/app_cubit.dart';
+import 'package:tasks_frontend/style/app_theme.dart';
 import 'package:tasks_frontend/style/custom_strips.dart';
 import 'package:tasks_frontend/views/profile_view.dart';
 
 import '../bloc/task_bloc/tasks_bloc.dart';
 import '../models/tasks.model.dart';
-import '../notification_handler.dart';
 import '../style/custom_style.dart';
 import '../widget/icon_button_filled.dart';
 import '../widget/task_tile.dart';
@@ -54,7 +55,7 @@ class HomepageState extends State<Homepage> {
       child: AnnotatedRegion(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
-          backgroundColor: AppStyle.appBackground(),
+          backgroundColor: context.backgroundColor,
           body: SafeArea(
             child: BlocBuilder<TasksBloc, TasksState>(
               builder: (context, tasksState) {
@@ -109,9 +110,12 @@ class HomepageState extends State<Homepage> {
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      AppStyle.subheadingTextStyle('Ongoing'),
+                                      AppStyle.subheadingTextStyle(
+                                        'Ongoing',
+                                        context,
+                                      ),
                                       Chip(
-                                        backgroundColor: Colors.grey.shade300,
+                                        backgroundColor: context.onBackground,
                                         padding: const EdgeInsets.all(1),
                                         side: BorderSide.none,
                                         label: Text(
@@ -128,7 +132,8 @@ class HomepageState extends State<Homepage> {
                                         Divider(
                                           endIndent: 10,
                                           indent: 10,
-                                          color: Colors.grey.shade300,
+                                          thickness: 3,
+                                          color: context.onBackground,
                                         ),
                                     physics:
                                         const NeverScrollableScrollPhysics(),
@@ -161,9 +166,10 @@ class HomepageState extends State<Homepage> {
                                       children: [
                                         AppStyle.subheadingTextStyle(
                                           'Completed',
+                                          context,
                                         ),
                                         Chip(
-                                          backgroundColor: Colors.grey.shade300,
+                                          backgroundColor: context.onBackground,
                                           padding: const EdgeInsets.all(1),
                                           side: BorderSide.none,
                                           label: Text(
@@ -265,14 +271,14 @@ class HomepageState extends State<Homepage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Good',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   height: 1,
-                  // color: Theme.of(context).colorScheme.primary,
-                  color: Colors.black,
+                  color: context.primaryColor,
+                  // color: Colors.black,
                 ),
               ),
               Text(
@@ -281,8 +287,7 @@ class HomepageState extends State<Homepage> {
                   fontSize: 28,
                   height: 1,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade500,
-                  // color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: context.secondaryColor,
                 ),
               ),
             ],
@@ -312,9 +317,13 @@ class HomepageState extends State<Homepage> {
                 icon: const Icon(Icons.notifications_outlined),
               ),
               IconButtonFilled(
-                icon: const Icon(Icons.circle),
+                icon: Icon(
+                  context.read<AppCubit>().state != ThemeMode.light
+                      ? Icons.light_mode_rounded
+                      : Icons.dark_mode_rounded,
+                ),
                 onPressed: () async {
-                  await NotificationProvider().debugScheduledNotifications();
+                  context.read<AppCubit>().toggleTheme();
                 },
               ),
               IconButtonFilled(
@@ -349,8 +358,8 @@ class HomepageState extends State<Homepage> {
       padding: const EdgeInsets.all(14).copyWith(bottom: 16),
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        // color: Theme.of(context).colorScheme.onSurface,
-        color: Colors.black,
+        color: context.surfaceContainer,
+        // color: Colors.black,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(

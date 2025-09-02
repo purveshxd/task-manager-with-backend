@@ -1,8 +1,18 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
 
-part 'app_state.dart';
+class AppCubit extends Cubit<ThemeMode> {
+  AppCubit() : super(ThemeMode.dark);
 
-class AppCubit extends Cubit<AppState> {
-  AppCubit() : super(AppInitial());
+  void toggleTheme() {
+    log("Toggle");
+    log(state.name);
+    if (state == ThemeMode.light) {
+      emit(ThemeMode.dark);
+    } else {
+      emit(ThemeMode.light);
+    }
+  }
 }

@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:tasks_frontend/bloc/task_bloc/tasks_bloc.dart';
 import 'package:tasks_frontend/models/tasks.model.dart';
 import 'package:tasks_frontend/notification_handler.dart';
+import 'package:tasks_frontend/style/app_theme.dart';
 import 'package:tasks_frontend/style/custom_style.dart';
 import 'package:tasks_frontend/widget/custom_action_chip.dart';
 import 'package:tasks_frontend/widget/icon_button_filled.dart';
@@ -251,11 +252,11 @@ class _AddTaskViewState extends State<AddTaskView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppStyle.appBackground(),
+      backgroundColor: context.backgroundColor,
 
       appBar: AppBar(
         title: Text(isEdit ? "Edit Task" : "Add Task"),
-        backgroundColor: AppStyle.appBackground(),
+        backgroundColor: context.backgroundColor,
         actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
           widget.task != null
@@ -555,7 +556,7 @@ class _AddTaskViewState extends State<AddTaskView> {
 
       floatingActionButton: FilledButton.tonalIcon(
         style: FilledButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           foregroundColor: Colors.white,
         ),
         icon: const Icon(Icons.check_circle_rounded),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tasks_frontend/bloc/app_cubit/app_cubit.dart';
 import 'package:tasks_frontend/bloc/task_bloc/tasks_bloc.dart';
 import 'package:tasks_frontend/localstorage/local_storage.dart';
 import 'package:tasks_frontend/notification_handler.dart';
+import 'package:tasks_frontend/style/app_theme.dart';
 import 'package:tasks_frontend/views/homepage.dart';
 
 void main() async {
@@ -13,16 +15,21 @@ void main() async {
   await NotificationProvider.init();
 
   runApp(
-    BlocProvider(
-      create: (context) => TasksBloc(LocalStorageRepo())..add(LoadTasks()),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => TasksBloc(LocalStorageRepo())..add(LoadTasks()),
+        ),
+        BlocProvider(create: (context) => AppCubit()),
+      ],
       child: MyApp(),
     ),
   );
 }
 
 /*
-  TODO - Add low medium high task priorities
-  TODO - 
+  TODO [1] Add dark theme
+  TODO [2] Add task marking in database
 */
 
 class MyApp extends StatelessWidget {
@@ -30,21 +37,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.system,
-      theme: ThemeData(
-        fontFamily: 'Poppins',
-        useMaterial3: true,
-
-        colorScheme: ColorScheme.fromSeed(
-          brightness: Brightness.light,
-          seedColor: Color(0xFF0026FF),
-          dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-        ),
-      ),
-      home: Homepage(),
+    return BlocBuilder<AppCubit, ThemeMode>(
+      builder: (context, themeMode) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          themeMode: themeMode,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          home: Homepage(),
+        );
+      },
     );
   }
 }
- 

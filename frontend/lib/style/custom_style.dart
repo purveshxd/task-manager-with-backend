@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:tasks_frontend/models/tasks.model.dart';
+import 'package:tasks_frontend/style/app_theme.dart';
 
 class AppStyle {
-  static Text subheadingTextStyle(String text) {
+  static Text subheadingTextStyle(String text, BuildContext context) {
     return Text(
       text,
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, height: 0),
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 22,
+        height: 0,
+        color: context.secondaryColor,
+      ),
     );
   }
 
@@ -41,11 +47,6 @@ class AppStyle {
       fillColor: Colors.white,
       filled: true,
     );
-  }
-
-  static Color appBackground() {
-    return Colors.grey.shade100;
-    // return const Color.fromARGB(255, 20, 20, 20);
   }
 
   static Color primaryColor() {

@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tasks_frontend/style/app_theme.dart';
 import 'package:tasks_frontend/style/custom_style.dart';
 
 import '../bloc/task_bloc/tasks_bloc.dart';
@@ -56,9 +57,9 @@ class TaskTile extends StatelessWidget {
                         children: [
                           Text(
                             task.name[0].toUpperCase() + task.name.substring(1),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black,
+                              color: context.onSurfaceVariant,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -127,8 +128,10 @@ class TaskTile extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(0.5),
                     decoration: BoxDecoration(
+                      color: context.onBackground,
                       border: BoxBorder.all(
-                        color: Colors.grey.shade300,
+                        color: context.onBackground,
+                        style: BorderStyle.solid,
                         width: 1.5,
                       ),
 
