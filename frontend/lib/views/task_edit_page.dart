@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tasks_frontend/style/custom_style.dart';
 import 'package:tasks_frontend/models/tasks.model.dart';
+import 'package:tasks_frontend/style/custom_style.dart';
 
 class TaskEditPage extends StatelessWidget {
   final Tasks task;
@@ -41,7 +41,7 @@ class TaskEditPage extends StatelessWidget {
             SizedBox(height: 20),
             TextField(
               controller: titleController,
-              decoration: AppStyle.textFieldDecoration(label: ""),
+              decoration: AppStyle.textFieldDecoration(context, label: ""),
             ),
             Row(
               spacing: 6,
@@ -60,7 +60,7 @@ class TaskEditPage extends StatelessWidget {
               controller: descController,
               maxLines: null,
               minLines: null,
-              decoration: AppStyle.textFieldDecoration(label: ""),
+              decoration: AppStyle.textFieldDecoration(context, label: ""),
             ),
           ],
         ),

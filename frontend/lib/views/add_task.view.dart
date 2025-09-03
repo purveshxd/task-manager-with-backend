@@ -3,12 +3,12 @@ import 'dart:math' hide log;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tasks_frontend/bloc/app_cubit/app_cubit.dart';
 import 'package:tasks_frontend/bloc/task_bloc/tasks_bloc.dart';
 import 'package:tasks_frontend/models/tasks.model.dart';
 import 'package:tasks_frontend/notification_handler.dart';
 import 'package:tasks_frontend/style/app_theme.dart';
 import 'package:tasks_frontend/style/custom_style.dart';
-import 'package:tasks_frontend/widget/custom_action_chip.dart';
 import 'package:tasks_frontend/widget/icon_button_filled.dart';
 
 class RepeatOptionModel {
@@ -42,6 +42,7 @@ class _AddTaskViewState extends State<AddTaskView> {
   late List<RepeatOptionModel> repeatOptions;
   late int repeatIndex;
   late String repeatName;
+  late RepeatOption repeatOption;
   late TaskPriority taskPriority;
 
   final notificationHandler = NotificationProvider();
@@ -63,6 +64,7 @@ class _AddTaskViewState extends State<AddTaskView> {
 
     isEdit = widget.task != null;
     taskPriority = widget.task?.taskPriority ?? TaskPriority.low;
+    repeatOption = widget.task?.repeatOption ?? RepeatOption.once;
 
     // Initialize controllers
     titleController = TextEditingController(text: widget.task?.name ?? "");
@@ -173,7 +175,7 @@ class _AddTaskViewState extends State<AddTaskView> {
       context.read<TasksBloc>().add(
         AddTask(
           Tasks(
-            repeatOption: RepeatOption.values[repeatIndex],
+            repeatOption: repeatOption,
             notificationDateTime: addNotification
                 ? currentNotificationTime
                 : null,
@@ -209,7 +211,7 @@ class _AddTaskViewState extends State<AddTaskView> {
         desc: descController.text.trim(),
         addNotification: addNotification,
         notificationDateTime: addNotification ? currentNotificationTime : null,
-        repeatOption: RepeatOption.values[repeatIndex],
+        repeatOption: repeatOption,
         taskPriority: taskPriority,
       );
       // Preserve the original ID
@@ -255,7 +257,14 @@ class _AddTaskViewState extends State<AddTaskView> {
       backgroundColor: context.backgroundColor,
 
       appBar: AppBar(
-        title: Text(isEdit ? "Edit Task" : "Add Task"),
+        leading: CloseButton(color: context.secondaryColor),
+        title: Text(
+          isEdit ? "Edit Task" : "Add Task",
+          style: TextStyle(
+            color: context.secondaryColor,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         backgroundColor: context.backgroundColor,
         actionsPadding: EdgeInsets.symmetric(horizontal: 10),
         actions: [
@@ -265,9 +274,19 @@ class _AddTaskViewState extends State<AddTaskView> {
                     Navigator.pop(context);
                     context.read<TasksBloc>().add(DeleteTask(widget.task!.id));
                   },
-                  icon: Icon(Icons.delete_outline_sharp),
+                  icon: Icon(
+                    Icons.delete_sweep_rounded,
+                    color: context.secondaryColor,
+                  ),
                 )
               : SizedBox.shrink(),
+
+          IconButton.filled(
+            onPressed: () {
+              context.read<AppCubit>().toggleTheme();
+            },
+            icon: Icon(Icons.dark_mode),
+          ),
         ],
       ),
       body: SafeArea(
@@ -295,7 +314,11 @@ class _AddTaskViewState extends State<AddTaskView> {
                   TextField(
                     textInputAction: TextInputAction.next,
                     controller: titleController,
-                    decoration: AppStyle.textFieldDecoration(label: ""),
+                    style: TextStyle(color: context.secondaryColor),
+                    decoration: AppStyle.textFieldDecoration(
+                      context,
+                      label: "",
+                    ),
                   ),
                   Row(
                     spacing: 8,
@@ -309,9 +332,9 @@ class _AddTaskViewState extends State<AddTaskView> {
                       ),
                       Flexible(
                         child: Container(
-                          height: 2,
+                          height: 3,
                           width: double.maxFinite,
-                          color: Colors.grey.shade300,
+                          color: context.onBackground,
                         ),
                       ),
                     ],
@@ -319,9 +342,13 @@ class _AddTaskViewState extends State<AddTaskView> {
                   TextField(
                     textInputAction: TextInputAction.done,
                     controller: descController,
+                    style: TextStyle(color: context.secondaryColor),
                     minLines: null,
                     maxLines: null,
-                    decoration: AppStyle.textFieldDecoration(label: ""),
+                    decoration: AppStyle.textFieldDecoration(
+                      context,
+                      label: "",
+                    ),
                   ),
                   Row(
                     spacing: 8,
@@ -335,9 +362,9 @@ class _AddTaskViewState extends State<AddTaskView> {
                       ),
                       Flexible(
                         child: Container(
-                          height: 2,
+                          height: 3,
                           width: double.maxFinite,
-                          color: Colors.grey.shade300,
+                          color: context.onBackground,
                         ),
                       ),
                     ],
@@ -375,15 +402,16 @@ class _AddTaskViewState extends State<AddTaskView> {
                       expandedInsets: EdgeInsets.all(0),
                       multiSelectionEnabled: false,
                       style: SegmentedButton.styleFrom(
-                        foregroundColor: Colors.black,
+                        foregroundColor: context.secondaryColor,
                         selectedForegroundColor: Colors.black,
                         animationDuration: Durations.medium4,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadiusGeometry.circular(10),
                         ),
                         side: BorderSide.none,
-                        backgroundColor: Colors.white,
-                        selectedBackgroundColor: Colors.grey.shade400,
+                        backgroundColor: context.onBackground.withAlpha(200),
+                        selectedBackgroundColor: context.secondaryColor
+                            .withAlpha(180),
                       ),
                     ),
                   ),
@@ -400,15 +428,15 @@ class _AddTaskViewState extends State<AddTaskView> {
                       ),
                       Flexible(
                         child: Container(
-                          height: 2,
+                          height: 3,
                           width: double.maxFinite,
-                          color: Colors.grey.shade300,
+                          color: context.onBackground,
                         ),
                       ),
                       IconButton(
                         splashColor: Colors.grey.shade50,
                         style: IconButton.styleFrom(
-                          backgroundColor: Colors.white,
+                          backgroundColor: context.onBackground,
                           foregroundColor: addNotification
                               ? Colors.black
                               : Colors.grey.shade400,
@@ -439,7 +467,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: context.onBackground.withAlpha(200),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           padding: EdgeInsets.symmetric(horizontal: 5),
@@ -452,7 +480,10 @@ class _AddTaskViewState extends State<AddTaskView> {
                                   SizedBox(width: 5),
                                   Text(
                                     "Date | Time",
+
                                     style: TextStyle(
+                                      color: context.secondaryColor,
+
                                       // fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -468,7 +499,8 @@ class _AddTaskViewState extends State<AddTaskView> {
                                             : Colors.grey.shade400,
                                       ),
                                     ),
-                                    backgroundColor: Colors.grey.shade200,
+                                    backgroundColor: context.onBackground
+                                        .withAlpha(130),
                                     side: BorderSide.none,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
@@ -485,7 +517,8 @@ class _AddTaskViewState extends State<AddTaskView> {
                                             : Colors.grey.shade400,
                                       ),
                                     ),
-                                    backgroundColor: Colors.grey.shade200,
+                                    backgroundColor: context.onBackground
+                                        .withAlpha(130),
                                     side: BorderSide.none,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
@@ -508,38 +541,53 @@ class _AddTaskViewState extends State<AddTaskView> {
                             ),
                             Flexible(
                               child: Container(
-                                height: 2,
+                                height: 3,
                                 width: double.maxFinite,
-                                color: Colors.grey.shade300,
+                                color: context.onBackground,
                               ),
                             ),
                           ],
                         ),
 
-                        Container(
-                          width: double.maxFinite,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 1,
+                        // ! =================
+                        SegmentedButton<int>(
+                          onSelectionChanged: (Set<int> newSelection) {
+                            setState(() {
+                              repeatOption =
+                                  RepeatOption.values[newSelection.first];
+                            });
+                          },
+                          segments: List.generate(
+                            RepeatOption.values.length,
+                            (index) => ButtonSegment(
+                              value: index,
+                              label: Text(
+                                RepeatOption.values[index].name[0]
+                                        .toUpperCase() +
+                                    RepeatOption.values[index].name.substring(
+                                      1,
+                                    ),
+                              ),
+                            ),
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Wrap(
-                            alignment: WrapAlignment.spaceBetween,
-                            runSpacing: 0,
-                            spacing: 8,
-                            children: List.generate(repeatOptions.length, (
-                              index,
-                            ) {
-                              final option = repeatOptions[index];
-                              return CustomActionChip(
-                                label: option.option.name,
-                                isSelected: option.isSelected,
-                                onPressed: (value) => toggleChip(index),
-                              );
-                            }),
+                          selected: {RepeatOption.values.indexOf(repeatOption)},
+                          showSelectedIcon: false,
+                          emptySelectionAllowed: false,
+                          expandedInsets: EdgeInsets.all(0),
+                          multiSelectionEnabled: false,
+                          style: SegmentedButton.styleFrom(
+                            foregroundColor: context.secondaryColor,
+                            selectedForegroundColor: Colors.black,
+                            animationDuration: Durations.medium4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadiusGeometry.circular(10),
+                            ),
+                            side: BorderSide.none,
+                            backgroundColor: context.onBackground.withAlpha(
+                              200,
+                            ),
+                            selectedBackgroundColor: context.secondaryColor
+                                .withAlpha(180),
                           ),
                         ),
                       ],

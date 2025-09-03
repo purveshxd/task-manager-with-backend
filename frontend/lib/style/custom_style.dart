@@ -36,15 +36,19 @@ class AppStyle {
     );
   }
 
-  static InputDecoration textFieldDecoration({required String label}) {
+  static InputDecoration textFieldDecoration(
+    BuildContext context, {
+    required String label,
+  }) {
     return InputDecoration(
       labelText: label,
+
       floatingLabelBehavior: FloatingLabelBehavior.always,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide.none,
       ),
-      fillColor: Colors.white,
+      fillColor: context.onBackground.withAlpha(200),
       filled: true,
     );
   }

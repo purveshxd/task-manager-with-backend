@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
@@ -53,7 +52,7 @@ class HomepageState extends State<Homepage> {
         }
       },
       child: AnnotatedRegion(
-        value: SystemUiOverlayStyle.dark,
+        value: context.read<AppCubit>().state,
         child: Scaffold(
           backgroundColor: context.backgroundColor,
           body: SafeArea(
@@ -132,7 +131,7 @@ class HomepageState extends State<Homepage> {
                                         Divider(
                                           endIndent: 10,
                                           indent: 10,
-                                          thickness: 3,
+                                          thickness: 2,
                                           color: context.onBackground,
                                         ),
                                     physics:
@@ -184,7 +183,8 @@ class HomepageState extends State<Homepage> {
                                   separatorBuilder: (context, index) => Divider(
                                     endIndent: 10,
                                     indent: 10,
-                                    color: Colors.grey.shade300,
+                                    thickness: 2,
+                                    color: context.onBackground,
                                   ),
                                   physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,

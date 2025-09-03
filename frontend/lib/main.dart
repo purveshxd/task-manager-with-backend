@@ -28,7 +28,7 @@ void main() async {
 }
 
 /*
-  TODO [1] Add dark theme
+  // TODO [1] Add dark theme
   TODO [2] Add task marking in database
 */
 

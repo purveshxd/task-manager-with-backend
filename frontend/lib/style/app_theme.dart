@@ -44,6 +44,6 @@ extension ThemeColors on BuildContext {
   Color get onBackground => Theme.of(this).colorScheme.onSurface;
   Color get surfaceContainer => Theme.of(this).colorScheme.surfaceContainer;
   Color get onSurfaceVariant => Theme.of(this).colorScheme.onSurfaceVariant;
-
+  Color get outlineColor => Theme.of(this).colorScheme.outline;
   // Color get errorColor => Theme.of(this).colorScheme.error;
 }
