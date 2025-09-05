@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -7,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:tasks_frontend/bloc/app_cubit/app_cubit.dart';
 import 'package:tasks_frontend/style/app_theme.dart';
 import 'package:tasks_frontend/style/custom_strips.dart';
-import 'package:tasks_frontend/views/profile_view.dart';
+import 'package:tasks_frontend/views/settings_view.dart';
 
 import '../bloc/task_bloc/tasks_bloc.dart';
 import '../models/tasks.model.dart';
@@ -284,7 +285,7 @@ class HomepageState extends State<Homepage> {
               Text(
                 getGreeting(),
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 32,
                   height: 1,
                   fontWeight: FontWeight.bold,
                   color: context.secondaryColor,
@@ -294,46 +295,39 @@ class HomepageState extends State<Homepage> {
           ),
           Row(
             children: [
-              IconButtonFilled(
-                onPressed: () async {
-                  // temp notification
-                  await FlutterLocalNotificationsPlugin().show(
-                    Random().nextInt(100),
-                    'title',
-                    'body',
-                    const NotificationDetails(
-                      android: AndroidNotificationDetails(
-                        'task_channel', // channel id
-                        'Task Notifications',
-                        importance: Importance.high,
-                        enableVibration: true,
-                        autoCancel: false,
-                        category: AndroidNotificationCategory.reminder,
-                        priority: Priority.high,
-                      ),
+              !kDebugMode
+                  ? SizedBox.shrink()
+                  : IconButtonFilled(
+                      onPressed: () async {
+                        // temp notification
+                        await FlutterLocalNotificationsPlugin().show(
+                          Random().nextInt(100),
+                          'title',
+                          'body',
+                          const NotificationDetails(
+                            android: AndroidNotificationDetails(
+                              'task_channel', // channel id
+                              'Task Notifications',
+                              importance: Importance.high,
+                              enableVibration: true,
+                              autoCancel: false,
+                              category: AndroidNotificationCategory.reminder,
+                              priority: Priority.high,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.notifications_outlined),
                     ),
-                  );
-                },
-                icon: const Icon(Icons.notifications_outlined),
-              ),
+
               IconButtonFilled(
-                icon: Icon(
-                  context.read<AppCubit>().state != ThemeMode.light
-                      ? Icons.light_mode_rounded
-                      : Icons.dark_mode_rounded,
-                ),
-                onPressed: () async {
-                  context.read<AppCubit>().toggleTheme();
-                },
-              ),
-              IconButtonFilled(
-                icon: const Icon(Icons.person),
+                icon: const Icon(Icons.settings_outlined),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return const ProfileView();
+                        return const SettingsView();
                       },
                     ),
                   );

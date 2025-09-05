@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static ThemeData lightTheme = ThemeData(
+  static ThemeData lightTheme(Color seedColor) => ThemeData(
     fontFamily: 'Poppins',
     useMaterial3: true,
     brightness: Brightness.light,
@@ -12,11 +12,12 @@ class AppTheme {
       onSurface: Colors.grey.shade300,
       onSurfaceVariant: Colors.grey.shade900,
       brightness: Brightness.light,
-      seedColor: Color(0xFF0026FF),
+      seedColor: seedColor,
+      // seedColor: Color(0xFF0026FF),
       dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
     ),
   );
-  static ThemeData darkTheme = ThemeData(
+  static ThemeData darkTheme(Color seedColor) => ThemeData(
     fontFamily: 'Poppins',
     useMaterial3: true,
     brightness: Brightness.dark,
@@ -27,7 +28,8 @@ class AppTheme {
       onSurface: Colors.grey.shade800,
       onSurfaceVariant: Colors.grey.shade100,
       brightness: Brightness.dark,
-      seedColor: Color(0xFF0026FF),
+      seedColor: seedColor,
+      // seedColor: Color(0xFF0026FF),
       dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
     ),
   );

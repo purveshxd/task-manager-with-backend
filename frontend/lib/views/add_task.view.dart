@@ -3,7 +3,6 @@ import 'dart:math' hide log;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:tasks_frontend/bloc/app_cubit/app_cubit.dart';
 import 'package:tasks_frontend/bloc/task_bloc/tasks_bloc.dart';
 import 'package:tasks_frontend/models/tasks.model.dart';
 import 'package:tasks_frontend/notification_handler.dart';
@@ -40,8 +39,8 @@ class _AddTaskViewState extends State<AddTaskView> {
   DateTime dateTime = DateTime.now();
 
   late List<RepeatOptionModel> repeatOptions;
-  late int repeatIndex;
-  late String repeatName;
+  // late int repeatIndex;
+  // late String repeatName;
   late RepeatOption repeatOption;
   late TaskPriority taskPriority;
 
@@ -89,8 +88,8 @@ class _AddTaskViewState extends State<AddTaskView> {
 
     // Initialize repeat options
     final currentRepeat = widget.task?.repeatOption ?? RepeatOption.once;
-    repeatIndex = currentRepeat.index;
-    repeatName = currentRepeat.name;
+    // repeatIndex = currentRepeat.index;
+    // repeatName = currentRepeat.name;
 
     repeatOptions = [
       RepeatOptionModel(
@@ -126,11 +125,13 @@ class _AddTaskViewState extends State<AddTaskView> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? timer = await showDatePicker(
       confirmText: "Set Time",
+
       currentDate: dateTime,
       context: context,
       firstDate: DateTime.now().subtract(Duration(days: 1)),
       lastDate: DateTime.now().add(Duration(days: 10000)),
     );
+
     if (timer != null && timer != dateTime) {
       setState(() {
         dateTime = timer;
@@ -145,6 +146,7 @@ class _AddTaskViewState extends State<AddTaskView> {
     if (context.mounted) {
       final TimeOfDay? timerPick = await showTimePicker(
         context: context,
+        
         initialTime: timeOfDay,
         initialEntryMode: TimePickerEntryMode.dial,
       );
@@ -158,7 +160,7 @@ class _AddTaskViewState extends State<AddTaskView> {
 
   Future<void> addNotificationButton() async {
     await notificationHandler.scheduleNotification(
-      repeatType: repeatOptions[repeatIndex].option.name,
+      repeatType: repeatOption.name,
       id: isEdit ? widget.task!.id.hashCode : Random().nextInt(100),
       title: titleController.text.trim(),
       body: descController.text.trim(),
@@ -241,15 +243,15 @@ class _AddTaskViewState extends State<AddTaskView> {
     }
   }
 
-  void toggleChip(int index) {
-    setState(() {
-      for (int i = 0; i < repeatOptions.length; i++) {
-        repeatOptions[i] = repeatOptions[i].copyWith(isSelected: i == index);
-      }
-      repeatIndex = index;
-      repeatName = repeatOptions[index].option.name;
-    });
-  }
+  // void toggleChip(int index) {
+  //   setState(() {
+  //     for (int i = 0; i < repeatOptions.length; i++) {
+  //       repeatOptions[i] = repeatOptions[i].copyWith(isSelected: i == index);
+  //     }
+  //     repeatIndex = index;
+  //     repeatName = repeatOptions[index].option.name;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -281,20 +283,18 @@ class _AddTaskViewState extends State<AddTaskView> {
                 )
               : SizedBox.shrink(),
 
-          IconButton.filled(
-            onPressed: () {
-              context.read<AppCubit>().toggleTheme();
-            },
-            icon: Icon(Icons.dark_mode),
-          ),
+          // IconButton.filled(
+          //   onPressed: () {
+          //     context.read<AppCubit>().toggleTheme();
+          //   },
+          //   icon: Icon(Icons.dark_mode),
+          // ),
         ],
       ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0).copyWith(bottom: 8),
           child: ListView(
-            // mainAxisSize: MainAxisSize.min,
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
@@ -480,7 +480,6 @@ class _AddTaskViewState extends State<AddTaskView> {
                                   SizedBox(width: 5),
                                   Text(
                                     "Date | Time",
-
                                     style: TextStyle(
                                       color: context.secondaryColor,
 
@@ -494,9 +493,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                                       "${dateTime.day}/${dateTime.month}/${dateTime.year}",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        color: addNotification
-                                            ? Colors.black
-                                            : Colors.grey.shade400,
+                                        color: context.secondaryColor,
                                       ),
                                     ),
                                     backgroundColor: context.onBackground
@@ -512,9 +509,7 @@ class _AddTaskViewState extends State<AddTaskView> {
                                       "${timeOfDay.hourOfPeriod}:${timeOfDay.minute.toString().padLeft(2, '0')} ${timeOfDay.period.name.toUpperCase()}",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        color: addNotification
-                                            ? Colors.black
-                                            : Colors.grey.shade400,
+                                        color: context.secondaryColor,
                                       ),
                                     ),
                                     backgroundColor: context.onBackground
