@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:tasks_frontend/bloc/app_cubit/app_data_model.dart';
 import 'package:tasks_frontend/localstorage/shared_prefs.dart';
+import 'package:tasks_frontend/style/app_theme.dart';
 
 class AppCubit extends Cubit<AppDataModel> {
   AppCubit()
@@ -38,19 +39,17 @@ class AppCubit extends Cubit<AppDataModel> {
 
   void loadAccentColor() async {
     final accentColorIndex = await SharedPrefs.getAccentColor();
-    var newState = state.copyWith(
-      accentColor: Colors.primaries[accentColorIndex],
-    );
+    var newState = state.copyWith(accentColor: primaryColors[accentColorIndex]);
     // Color(0xFF0026FF)
     emit(newState);
-    log(Colors.primaries[accentColorIndex].toString());
+    log(primaryColors[accentColorIndex].toString());
   }
 
   void switchAccentColor(int accentColorIndex) async {
     final isSet = await SharedPrefs.setAccentColor(accentColorIndex);
     if (isSet) {
       var newState = state.copyWith(
-        accentColor: Colors.primaries[accentColorIndex],
+        accentColor: primaryColors[accentColorIndex],
       );
       emit(newState);
     } else {

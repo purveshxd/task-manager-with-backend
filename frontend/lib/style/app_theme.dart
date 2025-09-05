@@ -6,7 +6,7 @@ class AppTheme {
     useMaterial3: true,
     brightness: Brightness.light,
     colorScheme: ColorScheme.fromSeed(
-      surface: Colors.grey.shade100,
+      // surface: Colors.grey.shade100,
       surfaceContainer: Colors.black,
       secondary: Colors.grey.shade700,
       onSurface: Colors.grey.shade300,
@@ -23,7 +23,7 @@ class AppTheme {
     brightness: Brightness.dark,
     colorScheme: ColorScheme.fromSeed(
       secondary: Colors.grey.shade500,
-      surface: Colors.black,
+      // surface: Colors.black,
       surfaceContainer: Colors.grey.shade900,
       onSurface: Colors.grey.shade800,
       onSurfaceVariant: Colors.grey.shade100,
@@ -49,3 +49,17 @@ extension ThemeColors on BuildContext {
   Color get outlineColor => Theme.of(this).colorScheme.outline;
   // Color get errorColor => Theme.of(this).colorScheme.error;
 }
+
+// Primary-style colors (hex values)
+const primaryColors = [
+  Color(0xFF0026FF), // Strong Blue
+  Color(0xFFFF0000), // Red
+  Color(0xFF00A300), // Green
+  Color(0xFFFFA500), // Orange
+  Color(0xFF6A00FF), // Purple
+  Color(0xFF00C4CC), // Cyan
+  Color(0xFFFF1493), // Pink
+  Color(0xFF008080), // Teal
+  Color(0xFFFFD700), // Golden Yellow
+  Color(0xFF000000), // Black
+];

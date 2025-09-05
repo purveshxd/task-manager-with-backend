@@ -53,7 +53,7 @@ class HomepageState extends State<Homepage> {
         }
       },
       child: AnnotatedRegion(
-        value: context.read<AppCubit>().state,
+        value: context.read<AppCubit>().state.themeMode,
         child: Scaffold(
           backgroundColor: context.backgroundColor,
           body: SafeArea(
@@ -239,6 +239,7 @@ class HomepageState extends State<Homepage> {
       ),
       // backgroundColor: const Color.fromARGB(255, 0, 38, 255),
       label: const Text('Add Task', style: TextStyle(color: Colors.white)),
+
       onPressed: () {
         Navigator.push(
           context,
